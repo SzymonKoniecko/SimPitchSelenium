@@ -19,7 +19,31 @@ public class NavBarPage : BasePage
         By_Nav_About_Btn = GetBySeleniumId("about-nav");
     }
 
-    public void AssertIfNavBarDisplayed()
+    internal MainPage GoToMainPage()
+    {
+        Click(By_Nav_Home_Btn);
+        return new MainPage(Driver);
+    }
+
+    internal PrepareSimulationPage GoToPrepareSimualationPage()
+    {
+        Click(By_Nav_Prepare_Sim_Btn);
+        return new PrepareSimulationPage(Driver);
+    }
+
+    internal AllSimulationsPage GoToAllSimulationsPagePage()
+    {
+        Click(By_Nav_All_Sim_Btn);
+        return new AllSimulationsPage(Driver);
+    }
+
+    internal AboutPage GoToAboutPage()
+    {
+        Click(By_Nav_About_Btn);
+        return new AboutPage(Driver);
+    }
+
+    internal void AssertIfNavBarDisplayed()
     {
         IsElementDisplayed(By_Logo);
         IsElementDisplayed(By_Nav_Home_Btn);
@@ -28,9 +52,28 @@ public class NavBarPage : BasePage
         IsElementDisplayed(By_Nav_About_Btn);
     }
 
-    protected MainPage GoToMainPage()
+    internal string GetLogoText()
     {
-        Click(By_Nav_Home_Btn);
-        return new MainPage(Driver);
+        return GetElementText(By_Logo);
+    }
+
+    internal string GetHomeBtnText()
+    {
+        return GetElementText(By_Nav_Home_Btn);
+    }
+
+    internal string GetPrepareSimulationBtnText()
+    {
+        return GetElementText(By_Nav_Prepare_Sim_Btn);
+    }
+
+    internal string GetAllSimulationsBtnText()
+    {
+        return GetElementText(By_Nav_All_Sim_Btn);
+    }
+
+    internal string GetAboutBtnText()
+    {
+        return GetElementText(By_Nav_About_Btn);
     }
 }

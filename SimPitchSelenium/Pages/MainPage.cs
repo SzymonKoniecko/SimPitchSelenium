@@ -30,6 +30,11 @@ public class MainPage : BasePage
         return this;
     }
 
+    internal void AssertIfDisplayed()
+    {
+        AssertHelper.IsTrue(IsElementDisplayed(By_SystemGoalSection), "Page is not loaded", "MainPage");
+    }
+
     public string GetSimPitchSectionText()
     {
         return GetElementText(By_SimPitchSection);
