@@ -9,6 +9,7 @@ namespace SimPitchSelenium.Tests;
 public abstract class BaseTest
 {
     protected IWebDriver Driver;
+    public static IWebDriver DriverInstance { get; private set; }
     protected string BaseUrl;
 
     [SetUp]
@@ -19,6 +20,7 @@ public abstract class BaseTest
         var headless = ConfigReader.GetHeadless();
 
         Driver = WebDriverFactory.CreateDriver(browser, headless);
+        DriverInstance = Driver;
     }
 
     [TearDown]
