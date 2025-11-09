@@ -33,6 +33,7 @@
   <ItemGroup>
     <Folder Include="Pages/" />
     <Folder Include="Reports/" />
+    <Folder Include="Drivers/" />
     <Folder Include="TestData/" />
   </ItemGroup>
 

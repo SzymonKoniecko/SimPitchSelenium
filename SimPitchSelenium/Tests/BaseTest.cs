@@ -1,6 +1,7 @@
 using System;
 using OpenQA.Selenium;
 using SimPitchSelenium.Drivers;
+using SimPitchSelenium.Reports;
 using SimPitchSelenium.Utils;
 
 namespace SimPitchSelenium.Tests;
@@ -23,6 +24,15 @@ public abstract class BaseTest
     [TearDown]
     public void TearDown()
     {
+        var outcome = TestContext.CurrentContext.Result.Outcome.Status;
+        var testName = TestContext.CurrentContext.Test.Name;
+
+        if (outcome == NUnit.Framework.Interfaces.TestStatus.Failed && Driver != null)
+        {
+            ErrorReporter.CaptureFailure(Driver, testName);
+            Thread.Sleep(1000);
+        }
+
         if (Driver != null)
         {
             try { Driver.Quit(); }
