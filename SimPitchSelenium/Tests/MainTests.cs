@@ -18,13 +18,13 @@ public class MainTests : BaseTest
     }
 
     [Test]
-    public void Should_See_NavBar()
+    public void Main_Should_See_NavBar()
     {
         _mainPage.NavBar.AssertIfNavBarDisplayed();
     }
 
     [Test]
-    public void Should_Display_Sections_Text()
+    public void Main_Should_Display_Sections_Text()
     {
         TextHelper.AssertTextContains(
             _mainPage.GetSimPitchSectionText(),
