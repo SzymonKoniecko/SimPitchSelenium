@@ -10,7 +10,7 @@ public class MainPage : BasePage
     protected By By_SystemGoalSection;
     protected By By_HeatMapSection;
     protected By By_PostieriorSection;
-    public By By_PrepareSimulation_Btn;
+    internal By By_PrepareSimulation_Btn;
 
     public MainPage(IWebDriver webDriver) : base(driver: webDriver)
     {
@@ -28,6 +28,12 @@ public class MainPage : BasePage
         Driver.Navigate().GoToUrl(BaseUrl);
 
         return this;
+    }
+
+    public PrepareSimulationPage GoToPrepareSimulationViaSectionButton()
+    {
+        Click(By_PrepareSimulation_Btn);
+        return new PrepareSimulationPage(Driver);
     }
 
     internal void AssertIfDisplayed()
