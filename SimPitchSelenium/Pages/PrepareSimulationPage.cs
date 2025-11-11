@@ -158,4 +158,19 @@ public class PrepareSimulationPage : BasePage
             "Simulation ID: ",
             "Missing or incorrect created simulation text!");
     }
+
+    internal void StartAnySimulation()
+    {
+        SelectSeasonYears(
+            isSeason2022_2023: true,
+            isSeason2025_2026: true
+        );
+        SelectTitle("Any test - " + DateTime.Now);
+        SelectLeague("pko-bp-ekstraklasa");
+        SelectNumberOfIterations("2");
+
+        ClickStartSimulation();
+
+        AssertStartedSimulationMessage();
+    }
 }

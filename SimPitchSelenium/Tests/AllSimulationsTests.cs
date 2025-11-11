@@ -1,0 +1,47 @@
+using System;
+using System.Security.Cryptography;
+using SimPitchSelenium.Pages;
+
+namespace SimPitchSelenium.Tests;
+
+[TestFixture]
+[Timeout(30000)]
+public class AllSimulationsTests : BaseTest
+{
+    private AllSimulationsPage _allSimulationsPage;
+    [SetUp]
+    public void Init()
+    {
+        var mainPage = new MainPage(Driver).Open();
+        _allSimulationsPage = mainPage.NavBar.GoToAllSimulationsPage();
+
+        var totalCount = _allSimulationsPage.GetTotalCount();
+        if (totalCount < 6)
+        {
+            var prepPage = _allSimulationsPage.NavBar.GoToPrepareSimualationPage();
+            for (int i = totalCount; i < 7; i++) // add simulations to have more than 6 for pagination
+            {
+                prepPage.StartAnySimulation();
+            }
+            prepPage.NavBar.GoToAllSimulationsPage();
+        }
+
+        if (_allSimulationsPage.GetTotalCount() < 6)
+        {
+            throw new Exception("Someting went wrong with adding simulations for pagging.");
+        }
+    }
+
+    [Test]
+    public void AllSimulations_Assert_Pagination()
+    {
+        _allSimulationsPage = _allSimulationsPage.NavBar.GoToAllSimulationsPage();
+
+        // going to the latest page
+        _allSimulationsPage.CheckIfItsFirstPage();
+        _allSimulationsPage.AssertSimulationCount(5);
+        _allSimulationsPage.GoToLatestPage();
+        _allSimulationsPage.SelectPageSize("10");
+        _allSimulationsPage.GoToLatestPage();
+    }
+}
