@@ -252,4 +252,22 @@ public abstract class BasePage
             AssertHelper.Fail($"Error during the assertion of dropdown value {locator}: {ex.Message}", context);
         }
     }
+
+    public void AssertUrlContains(string expectedPart, string context = "")
+    {
+        try
+        {
+            string currentUrl = Driver.Url;
+
+            AssertHelper.IsTrue(
+                currentUrl.Contains(expectedPart, StringComparison.OrdinalIgnoreCase),
+                $"URL '{currentUrl}' does not contains: '{expectedPart}'.",
+                context
+            );
+        }
+        catch (Exception ex)
+        {
+            AssertHelper.Fail($"Erorr during looking for URL: {ex.Message}", context);
+        }
+    }
 }
