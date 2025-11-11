@@ -11,6 +11,7 @@ public class AllSimulationsPage : BasePage
     protected By By_Next_Button;
     protected By By_TotalCount;
     protected By By_SimulationClass;
+    protected By By_SortingOrder_Button;
     protected By By_Simulation_Details(int index) => GetBySeleniumId($"title-details-{index}");
     protected By By_Simulation_Details_Close(int index) => GetBySeleniumId($"title-details-close-{index}");
     public AllSimulationsPage(IWebDriver webDriver) : base(driver: webDriver)
@@ -20,6 +21,7 @@ public class AllSimulationsPage : BasePage
         By_Next_Button = GetBySeleniumId("next-button");
         By_TotalCount = GetBySeleniumId("total-count");
         By_SimulationClass = GetByClass("simulation");
+        By_SortingOrder_Button = GetBySeleniumId("button-order");
     }
 
     internal int GetTotalCount()
@@ -30,6 +32,11 @@ public class AllSimulationsPage : BasePage
             .Trim();
 
         return int.Parse(value);
+    }
+
+    internal void RefreshPage()
+    {
+        Click(base.By_Button_Primary);
     }
 
     internal void GoToPreviousPage()
@@ -60,6 +67,19 @@ public class AllSimulationsPage : BasePage
         SelectFromDropdown(GetBySeleniumId($"size-select"), size, "SelectPageSize");
     }
 
+    internal void SetSortingMethod(string sortingName, string condition = null)
+    {
+        SelectFromDropdown(GetBySeleniumId($"sorting-select"), sortingName, "SetSortingMethod");
+        if (!string.IsNullOrEmpty(condition))
+        {
+            SelectFromDropdown(GetBySeleniumId($"dynamic-select"), condition, "SetSortingMethod-condition");
+        }
+    }
+
+    internal void ChangeSortingOrder()
+    {
+        Click(By_SortingOrder_Button);
+    }
 
     internal void AssertIfDisplayed()
     {

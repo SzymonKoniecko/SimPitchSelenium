@@ -30,6 +30,27 @@ public class AllSimulationsTests : BaseTest
         {
             throw new Exception("Someting went wrong with adding simulations for pagging.");
         }
+
+        _allSimulationsPage.RefreshPage();
+    }
+
+    [Test]
+    public void AllSimulations_Assert_Sorting()
+    {
+        _allSimulationsPage = _allSimulationsPage.NavBar.GoToAllSimulationsPage();
+
+        // going to the latest page
+        _allSimulationsPage.CheckIfItsFirstPage();
+        _allSimulationsPage.AssertSimulationCount(5);
+
+        _allSimulationsPage.SetSortingMethod("league", "pko-bp-ekstraklasa");
+        _allSimulationsPage.AssertTextDisplayed("PKO BP Ekstraklasa");
+
+        _allSimulationsPage.SetSortingMethod("execution-time");
+        _allSimulationsPage.AssertSimulationCount(5);
+        _allSimulationsPage.ChangeSortingOrder();
+        _allSimulationsPage.AssertSimulationCount(5);
+        _allSimulationsPage.AssertTextDisplayed("Toggle Ascending");
     }
 
     [Test]

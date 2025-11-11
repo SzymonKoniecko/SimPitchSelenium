@@ -156,6 +156,31 @@ public abstract class BasePage
         }
     }
 
+    public void AssertTextDisplayed(string text, string context = "")
+    {
+        try
+        {
+            var appDiv = Driver.FindElement(By_AppDiv);
+            string html = appDiv.GetAttribute("innerHTML");
+
+            bool containsText = html != null && html.IndexOf(text, StringComparison.OrdinalIgnoreCase) >= 0;
+
+            AssertHelper.IsTrue(
+                containsText,
+                $"Expected text '{text}' was not found in the application HTML.",
+                context
+            );
+        }
+        catch (NoSuchElementException)
+        {
+            AssertHelper.Fail($"App container element (By_AppDiv) was not found.", context);
+        }
+        catch (Exception ex)
+        {
+            AssertHelper.Fail($"Error while checking if text '{text}' is displayed: {ex.Message}", context);
+        }
+    }
+
     public void AssertIfSelected(By locator, bool shouldBeSelected = true, string context = "")
     {
         try
