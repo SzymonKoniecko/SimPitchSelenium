@@ -50,7 +50,7 @@ public class NavigationTests : BaseTest
         var prepPage = _mainPage.NavBar.GoToPrepareSimualationPage();
         prepPage.AssertIfDisplayed();
 
-        var allSimulationsPage = _mainPage.NavBar.GoToAllSimulationsPagePage();
+        var allSimulationsPage = _mainPage.NavBar.GoToAllSimulationsPage();
         allSimulationsPage.AssertIfDisplayed();
 
         var aboutPage = _mainPage.NavBar.GoToAboutPage();

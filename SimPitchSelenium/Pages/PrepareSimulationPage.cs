@@ -13,6 +13,9 @@ public class PrepareSimulationPage : BasePage
     internal By By_Title_Input;
     internal By By_League_Input;
     internal By By_NumberIteration_Input;
+    internal By By_CreateScoreboards_Checkbox;
+    internal By By_CreatedSimulation_Message;
+    internal By By_CreatedSimulation_Button;
     internal By By_Validation_Error;
     public PrepareSimulationPage(IWebDriver webDriver) : base(driver: webDriver)
     {
@@ -25,8 +28,19 @@ public class PrepareSimulationPage : BasePage
         By_Title_Input = GetBySeleniumId("input-title");
         By_League_Input = GetById("leagueId");
         By_NumberIteration_Input = GetBySeleniumId("input-iterations");
+        By_CreateScoreboards_Checkbox = GetBySeleniumId("input-create-scoreboards");
+        By_CreatedSimulation_Message = GetBySeleniumId("simulation-id-text");
+        By_CreatedSimulation_Button = GetBySeleniumId("simulation-result");
         By_Validation_Error = GetByClass("validation-error");
 
+    }
+
+    internal string GetSimulationId()
+    {
+        return GetElementText(By_CreatedSimulation_Message)
+            .Split("Simulation ID:")[1]
+            .ToString()
+            .Trim();
     }
 
     internal void SelectSeasonYears(
@@ -69,6 +83,11 @@ public class PrepareSimulationPage : BasePage
         Type(By_NumberIteration_Input, iterationsNumber, true);
     }
 
+    internal void SelectCreateScoreboardsCheckbox()
+    {
+        Click(By_CreateScoreboards_Checkbox);
+    }
+
     internal void ClickStartSimulation()
     {
         Click(base.By_Button_Primary);
@@ -77,6 +96,12 @@ public class PrepareSimulationPage : BasePage
     internal void ClickResetForm()
     {
         Click(base.By_Button_Secondary);
+    }
+
+    internal SimulationItemPage GoToSimulationItemPage()
+    {
+        Click(By_CreatedSimulation_Button);
+        return new SimulationItemPage(Driver);
     }
 
     internal void AssertIfDisplayed()
@@ -107,10 +132,14 @@ public class PrepareSimulationPage : BasePage
         TextHelper.AssertTextEquals(GetElementText(By_NumberIteration_Input), expectedIterationsNumber, "PrepareSimulationPage");
     }
 
-
     internal void AssertLeague(string expectedLeague)
     {
         AssertDropdownValue(By_League_Input, expectedLeague, "PrepareSimulationPage");
+    }
+
+    internal void AssertCreateScoreboardsCheckbox(bool isSelected)
+    {
+        AssertIfSelected(By_CreateScoreboards_Checkbox, isSelected);
     }
 
     internal void AssertValidationErrors(params string[] validationErrors)
@@ -120,5 +149,28 @@ public class PrepareSimulationPage : BasePage
         {
             TextHelper.AssertTextContains(validationText, valErrors, "Missing validation error text!");
         }
+    }
+
+    internal void AssertStartedSimulationMessage()
+    {
+        TextHelper.AssertTextContains(
+            GetElementText(By_CreatedSimulation_Message),
+            "Simulation ID: ",
+            "Missing or incorrect created simulation text!");
+    }
+
+    internal void StartAnySimulation()
+    {
+        SelectSeasonYears(
+            isSeason2022_2023: true,
+            isSeason2025_2026: true
+        );
+        SelectTitle("Any test - " + DateTime.Now);
+        SelectLeague("pko-bp-ekstraklasa");
+        SelectNumberOfIterations("2");
+
+        ClickStartSimulation();
+
+        AssertStartedSimulationMessage();
     }
 }

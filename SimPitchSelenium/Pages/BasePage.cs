@@ -68,6 +68,20 @@ public abstract class BasePage
         return element.Text?.Trim() ?? string.Empty;
     }
 
+    public int GetElementCount(By locator)
+    {
+        try
+        {
+            var elements = Driver.FindElements(locator);
+            int count = elements.Count;
+            return count;
+        }
+        catch (Exception ex)
+        {
+            throw new Exception($"[ERROR] Failed to get element count for {locator}: {ex.Message}");
+        }
+    }
+
     protected bool IsElementDisplayed(By locator)
     {
         try
@@ -139,6 +153,31 @@ public abstract class BasePage
         catch (StaleElementReferenceException)
         {
             return false;
+        }
+    }
+
+    public void AssertTextDisplayed(string text, string context = "")
+    {
+        try
+        {
+            var appDiv = Driver.FindElement(By_AppDiv);
+            string html = appDiv.GetAttribute("innerHTML");
+
+            bool containsText = html != null && html.IndexOf(text, StringComparison.OrdinalIgnoreCase) >= 0;
+
+            AssertHelper.IsTrue(
+                containsText,
+                $"Expected text '{text}' was not found in the application HTML.",
+                context
+            );
+        }
+        catch (NoSuchElementException)
+        {
+            AssertHelper.Fail($"App container element (By_AppDiv) was not found.", context);
+        }
+        catch (Exception ex)
+        {
+            AssertHelper.Fail($"Error while checking if text '{text}' is displayed: {ex.Message}", context);
         }
     }
 
@@ -250,6 +289,86 @@ public abstract class BasePage
         catch (Exception ex)
         {
             AssertHelper.Fail($"Error during the assertion of dropdown value {locator}: {ex.Message}", context);
+        }
+    }
+
+    public void AssertUrlContains(string expectedPart, string context = "")
+    {
+        try
+        {
+            string currentUrl = Driver.Url;
+
+            AssertHelper.IsTrue(
+                currentUrl.Contains(expectedPart, StringComparison.OrdinalIgnoreCase),
+                $"URL '{currentUrl}' does not contains: '{expectedPart}'.",
+                context
+            );
+        }
+        catch (Exception ex)
+        {
+            AssertHelper.Fail($"Erorr during looking for URL: {ex.Message}", context);
+        }
+    }
+
+    public bool IsButtonDisabled(By locator)
+    {
+        try
+        {
+            var element = Driver.FindElement(locator);
+
+            bool isDisabled = !element.Enabled
+                              || element.GetAttribute("disabled") != null
+                              || element.GetAttribute("aria-disabled") == "true";
+
+            return isDisabled;
+        }
+        catch (NoSuchElementException)
+        {
+            AssertHelper.Fail($"[ERROR] Button {locator} was not found on the page.");
+            throw;
+        }
+        catch (Exception ex)
+        {
+            AssertHelper.Fail($"[ERROR] Failed to check button state for {locator}: {ex.Message}");
+            throw;
+        }
+    }
+
+    public void AssertIfButtonDisabled(By locator, bool shouldBeDisabled = true, string context = "")
+    {
+        try
+        {
+            var element = Driver.FindElement(locator);
+
+            bool isDisabled = !element.Enabled
+                              || element.GetAttribute("disabled") != null
+                              || element.GetAttribute("aria-disabled") == "true";
+
+            if (shouldBeDisabled)
+            {
+                AssertHelper.IsTrue(
+                    isDisabled,
+                    $"Button {locator} should be disabled but it is enabled.",
+                    context
+                );
+            }
+            else
+            {
+                AssertHelper.IsFalse(
+                    isDisabled,
+                    $"Button {locator} should be enabled but it is disabled.",
+                    context
+                );
+            }
+
+        }
+        catch (NoSuchElementException)
+        {
+            AssertHelper.Fail($"Button {locator} was not found on the page.", context);
+        }
+        catch (Exception ex)
+        {
+            AssertHelper.Fail($"Error while checking button state for {locator}: {ex.Message}", context);
         }
     }
 }

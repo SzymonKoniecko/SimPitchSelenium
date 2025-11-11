@@ -31,7 +31,7 @@ public class NavBarPage : BasePage
         return new PrepareSimulationPage(Driver);
     }
 
-    internal AllSimulationsPage GoToAllSimulationsPagePage()
+    internal AllSimulationsPage GoToAllSimulationsPage()
     {
         Click(By_Nav_All_Sim_Btn);
         return new AllSimulationsPage(Driver);
