@@ -15,7 +15,7 @@ public class AllSimulationsTests : BaseTest
         var mainPage = new MainPage(Driver).Open();
         _allSimulationsPage = mainPage.NavBar.GoToAllSimulationsPage();
 
-        var totalCount = _allSimulationsPage.GetTotalCount();
+        var totalCount = _allSimulationsPage.Pagination.GetTotalCount();
         if (totalCount < 6)
         {
             var prepPage = _allSimulationsPage.NavBar.GoToPrepareSimualationPage();
@@ -26,7 +26,7 @@ public class AllSimulationsTests : BaseTest
             prepPage.NavBar.GoToAllSimulationsPage();
         }
 
-        if (_allSimulationsPage.GetTotalCount() < 6)
+        if (_allSimulationsPage.Pagination.GetTotalCount() < 6)
         {
             throw new Exception("Someting went wrong with adding simulations for pagging.");
         }
@@ -35,20 +35,20 @@ public class AllSimulationsTests : BaseTest
     }
 
     [Test]
-    public void AllSimulations_Assert_Sorting()
+    public void AllSimulations_Assert_Filter()
     {
         _allSimulationsPage = _allSimulationsPage.NavBar.GoToAllSimulationsPage();
 
         // going to the latest page
-        _allSimulationsPage.CheckIfItsFirstPage();
+        _allSimulationsPage.Pagination.CheckIfItsFirstPage();
         _allSimulationsPage.AssertSimulationCount(5);
 
-        _allSimulationsPage.SetSortingMethod("league", "pko-bp-ekstraklasa");
+        _allSimulationsPage.Filter.SetSortingMethod("league", "pko-bp-ekstraklasa");
         _allSimulationsPage.AssertTextDisplayed("PKO BP Ekstraklasa");
 
-        _allSimulationsPage.SetSortingMethod("execution-time");
+        _allSimulationsPage.Filter.SetSortingMethod("execution-time");
         _allSimulationsPage.AssertSimulationCount(5);
-        _allSimulationsPage.ChangeSortingOrder();
+        _allSimulationsPage.Filter.ChangeSortingOrder();
         _allSimulationsPage.AssertSimulationCount(5);
         _allSimulationsPage.AssertTextDisplayed("Toggle Ascending");
     }
@@ -59,10 +59,10 @@ public class AllSimulationsTests : BaseTest
         _allSimulationsPage = _allSimulationsPage.NavBar.GoToAllSimulationsPage();
 
         // going to the latest page
-        _allSimulationsPage.CheckIfItsFirstPage();
+        _allSimulationsPage.Pagination.CheckIfItsFirstPage();
         _allSimulationsPage.AssertSimulationCount(5);
-        _allSimulationsPage.GoToLatestPage();
-        _allSimulationsPage.SelectPageSize("10");
-        _allSimulationsPage.GoToLatestPage();
+        _allSimulationsPage.Pagination.GoToLatestPage();
+        _allSimulationsPage.Pagination.SelectPageSize("10");
+        _allSimulationsPage.Pagination.GoToLatestPage();
     }
 }

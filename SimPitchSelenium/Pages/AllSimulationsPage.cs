@@ -6,79 +6,24 @@ namespace SimPitchSelenium.Pages;
 
 public class AllSimulationsPage : BasePage
 {
+    internal PaginationPage Pagination;
+    internal FilterPage Filter;
     protected By By_Title;
-    protected By By_Prev_Button;
-    protected By By_Next_Button;
-    protected By By_TotalCount;
     protected By By_SimulationClass;
-    protected By By_SortingOrder_Button;
     protected By By_Simulation_Details(int index) => GetBySeleniumId($"title-details-{index}");
     protected By By_Simulation_Details_Close(int index) => GetBySeleniumId($"title-details-close-{index}");
     public AllSimulationsPage(IWebDriver webDriver) : base(driver: webDriver)
     {
         By_Title = GetBySeleniumId("title-all-simulations");
-        By_Prev_Button = GetBySeleniumId("prev-button");
-        By_Next_Button = GetBySeleniumId("next-button");
-        By_TotalCount = GetBySeleniumId("total-count");
         By_SimulationClass = GetByClass("simulation");
-        By_SortingOrder_Button = GetBySeleniumId("button-order");
-    }
 
-    internal int GetTotalCount()
-    {
-        var value = GetElementText(By_TotalCount)
-            .Split("Total count: ")[1]
-            .ToString()
-            .Trim();
-
-        return int.Parse(value);
+        Pagination = new PaginationPage(Driver);
+        Filter = new FilterPage(Driver);
     }
 
     internal void RefreshPage()
     {
         Click(base.By_Button_Primary);
-    }
-
-    internal void GoToPreviousPage()
-    {
-        Click(By_Prev_Button);
-    }
-
-    internal void GoToNextPage()
-    {
-        Click(By_Next_Button);
-    }
-
-    internal void CheckIfItsFirstPage()
-    {
-        AssertIfButtonDisabled(By_Prev_Button, true, "CheckIfItsFirstPage");
-    }
-
-    internal void GoToLatestPage()
-    {
-        while (!IsButtonDisabled(By_Next_Button))
-        {
-            GoToNextPage();
-        }
-    }
-
-    internal void SelectPageSize(string size)
-    {
-        SelectFromDropdown(GetBySeleniumId($"size-select"), size, "SelectPageSize");
-    }
-
-    internal void SetSortingMethod(string sortingName, string condition = null)
-    {
-        SelectFromDropdown(GetBySeleniumId($"sorting-select"), sortingName, "SetSortingMethod");
-        if (!string.IsNullOrEmpty(condition))
-        {
-            SelectFromDropdown(GetBySeleniumId($"dynamic-select"), condition, "SetSortingMethod-condition");
-        }
-    }
-
-    internal void ChangeSortingOrder()
-    {
-        Click(By_SortingOrder_Button);
     }
 
     internal void AssertIfDisplayed()
@@ -91,7 +36,7 @@ public class AllSimulationsPage : BasePage
         var text = GetElementText(By_Simulation_Details(index));
         foreach (var expText in expectedString)
         {
-            TextHelper.AssertTextContains(text, expText,$"AssertSimulationDetails-Index:{index}");
+            TextHelper.AssertTextContains(text, expText, $"AssertSimulationDetails-Index:{index}");
         }
     }
 
@@ -106,7 +51,7 @@ public class AllSimulationsPage : BasePage
             TextHelper.AssertTextContains(text, expText, $"AssertSimulationDetails-Index:{index}");
         }
     }
-    
+
     internal void AssertSimulationCount(int expectedCount)
     {
         AssertHelper.AreEqual(expectedCount, GetElementCount(By_SimulationClass));

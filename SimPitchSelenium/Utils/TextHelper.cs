@@ -35,6 +35,20 @@ public static class TextHelper
         }
     }
 
+    public static void AssertTextNotContains(string actual, string unexpectedSubstring, string context = "")
+    {
+        try
+        {
+            Assert.That(actual, Does.Not.Contain(unexpectedSubstring),
+                $"Text should not contain substring in {context}\nUnexpected substring: '{unexpectedSubstring}'\nActual: '{actual}'");
+        }
+        catch (AssertionException ex)
+        {
+            AssertHelper.HandleAssertionFailure(ex, context);
+            throw;
+        }
+    }
+
     public static void AssertTextNotEmpty(string actual, string context = "")
     {
         try
