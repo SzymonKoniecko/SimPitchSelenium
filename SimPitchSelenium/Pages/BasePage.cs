@@ -31,6 +31,13 @@ public abstract class BasePage
         By_Button_Secondary = GetByClass("button-secondary");
     }
 
+    internal SimulationItemPage GoToSimulationItemPageViaUrl(string simulationId)
+    {
+        Thread.Sleep(500);
+        Driver.Navigate().GoToUrl(BaseUrl + "/simulation/" + simulationId);
+        return new SimulationItemPage(Driver);
+    }
+
     protected IWebElement WaitUntilVisible(By locator)
     {
         return Wait.Until(ExpectedConditions.ElementIsVisible(locator));
@@ -178,6 +185,48 @@ public abstract class BasePage
         catch (Exception ex)
         {
             AssertHelper.Fail($"Error while checking if text '{text}' is displayed: {ex.Message}", context);
+        }
+    }
+
+    internal void WaitForText(string text)
+    {
+        int retry = 0;
+        while (!IsElementWithTextDisplayed(text))
+        {
+            Thread.Sleep(500);
+            retry++;
+            if (retry == 100)
+            {
+                throw new Exception("Waiting in loop?");
+            }
+        }
+    }
+
+    internal bool IsElementWithTextDisplayed(string text, string? tag = null)
+    {
+        if (string.IsNullOrWhiteSpace(text))
+            throw new ArgumentException("Text cannot be null or empty.", nameof(text));
+
+        try
+        {
+            // Escape single quotes for XPath
+            string safeText = text.Replace("'", "&apos;");
+
+            string xpath = string.IsNullOrWhiteSpace(tag)
+                ? $"//*[contains(normalize-space(text()), '{safeText}')]"
+                : $"//{tag}[contains(normalize-space(text()), '{safeText}')]";
+
+            var elements = Driver.FindElements(By.XPath(xpath));
+
+            return elements.Any(e => e.Displayed);
+        }
+        catch (NoSuchElementException)
+        {
+            return false;
+        }
+        catch (Exception)
+        {
+            return false;
         }
     }
 
@@ -369,6 +418,42 @@ public abstract class BasePage
         catch (Exception ex)
         {
             AssertHelper.Fail($"Error while checking button state for {locator}: {ex.Message}", context);
+        }
+    }
+
+    internal bool ScrollToText(string text, string? tag = null)
+    {
+        if (string.IsNullOrWhiteSpace(text))
+            throw new ArgumentException("Text cannot be null or empty.", nameof(text));
+
+        try
+        {
+            string safeText = text.Replace("'", "&apos;");
+
+            string xpath = string.IsNullOrWhiteSpace(tag)
+                ? $"//*[contains(normalize-space(text()), '{safeText}')]"
+                : $"//{tag}[contains(normalize-space(text()), '{safeText}')]";
+
+            var element = Driver.FindElement(By.XPath(xpath));
+
+            if (element == null)
+                return false;
+
+            ((IJavaScriptExecutor)Driver).ExecuteScript("arguments[0].scrollIntoView({ behavior: 'smooth', block: 'center' });", element);
+
+            Thread.Sleep(300);
+
+            return true;
+        }
+        catch (NoSuchElementException)
+        {
+            Console.WriteLine($"[ScrollToText] Element with text '{text}' not found.");
+            return false;
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"[ScrollToText] Failed to scroll to '{text}': {ex.Message}");
+            return false;
         }
     }
 }

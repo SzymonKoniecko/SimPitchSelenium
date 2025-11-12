@@ -159,7 +159,7 @@ public class PrepareSimulationPage : BasePage
             "Missing or incorrect created simulation text!");
     }
 
-    internal void StartAnySimulation()
+    internal void StartAnySimulation(string iterations = "2")
     {
         SelectSeasonYears(
             isSeason2022_2023: true,
@@ -167,7 +167,7 @@ public class PrepareSimulationPage : BasePage
         );
         SelectTitle("Any test - " + DateTime.Now);
         SelectLeague("pko-bp-ekstraklasa");
-        SelectNumberOfIterations("2");
+        SelectNumberOfIterations(iterations);
 
         ClickStartSimulation();
 
