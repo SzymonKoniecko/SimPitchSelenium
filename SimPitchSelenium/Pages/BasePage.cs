@@ -38,6 +38,14 @@ public abstract class BasePage
         return new SimulationItemPage(Driver);
     }
 
+    internal IterationResultPage GoToIterationResultPage(string simulationId, string iterationResultId)
+    {
+        Thread.Sleep(500);
+        Driver.Navigate().GoToUrl(BaseUrl + "/simulation/" + simulationId + "/iteration/" + iterationResultId);
+        return new IterationResultPage(Driver);
+    }
+
+
     protected IWebElement WaitUntilVisible(By locator)
     {
         return Wait.Until(ExpectedConditions.ElementIsVisible(locator));

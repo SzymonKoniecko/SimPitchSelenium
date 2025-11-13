@@ -72,7 +72,8 @@ public class SimulationItemTests : BaseTest
     public void SimulationItem_Assert_HeatMap()
     {
         if (String.IsNullOrEmpty(SimulationId))
-            throw new Exception("Init not completed? Init() - SimulatonItem_Assert_Pagination_Filter");
+            throw new Exception("Init not completed? Init() - SimulationItem_Assert_HeatMap");
+            
         _simulationItemPage = _mainPage.GoToSimulationItemPageViaUrl(SimulationId);
         _simulationItemPage.AssertIfDisplayed(SimulationId);
         _simulationItemPage.WaitForCompletedSimulation();
