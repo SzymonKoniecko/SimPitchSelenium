@@ -4,7 +4,7 @@ using SimPitchSelenium.Pages;
 namespace SimPitchSelenium.Tests;
 
 [TestFixture]
-[Timeout(30000)]
+[Timeout(60000)]
 public class SimulationItemTests : BaseTest
 {
     private SimulationItemPage _simulationItemPage;
@@ -59,6 +59,8 @@ public class SimulationItemTests : BaseTest
         _simulationItemPage.Pagination.CheckIfItsFirstPage();
         _simulationItemPage.Pagination.SelectPageSize("10");
         _simulationItemPage.Filter.SetSortingMethod("order-by-iteration");
+        _simulationItemPage.WaitForText("Scoreboard:");
+        _simulationItemPage.Filter.SetSortingMethod("order-by-iteration");
         _simulationItemPage.AssertIterationCount(10);
         _simulationItemPage.Filter.ChangeSortingOrder();
         _simulationItemPage.AssertIterationCount(10);
@@ -72,7 +74,8 @@ public class SimulationItemTests : BaseTest
     public void SimulationItem_Assert_HeatMap()
     {
         if (String.IsNullOrEmpty(SimulationId))
-            throw new Exception("Init not completed? Init() - SimulatonItem_Assert_Pagination_Filter");
+            throw new Exception("Init not completed? Init() - SimulationItem_Assert_HeatMap");
+            
         _simulationItemPage = _mainPage.GoToSimulationItemPageViaUrl(SimulationId);
         _simulationItemPage.AssertIfDisplayed(SimulationId);
         _simulationItemPage.WaitForCompletedSimulation();

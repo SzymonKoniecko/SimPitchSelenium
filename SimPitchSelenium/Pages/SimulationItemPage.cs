@@ -30,9 +30,15 @@ public class SimulationItemPage : BasePage
         Filter = new FilterPage(Driver);
     }
 
+    internal IterationResultPage GoToIteration(int index)
+    {
+        Click(GetBySeleniumId($"iteration-{index}"));
+
+        return new IterationResultPage(Driver);
+    }
+
     internal string GetCompletedIterationsString()
     {
-        var val = GetElementText(By_Simulation_Iterations);
         return GetElementText(By_Simulation_Iterations)
                 .Split("Completed iterations: ")[1]
                 .ToString()
@@ -95,7 +101,7 @@ public class SimulationItemPage : BasePage
         TextHelper.AssertTextContains(GetSimulationState(), expectedString, "AssertSimulationState");
     }
     public void AssertPercentSumEquals100(int rowNumber, string context) =>
-        AssertPercentSumEquals100(GetBySeleniumId($"cell-{rowNumber}-"), context);
+        AssertPercentSumEquals100(GetAnyBySeleniumId($"cell-{rowNumber}-"), context);
     public void AssertPercentSumEquals100(By cellsLocator, string context = "")
     {
         if (!IsElementWithTextDisplayed("Pos 1"))

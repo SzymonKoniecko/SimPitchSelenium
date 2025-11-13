@@ -1,4 +1,3 @@
-using System;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Support.UI;
 using SeleniumExtras.WaitHelpers;
@@ -26,9 +25,17 @@ public abstract class BasePage
         BaseUrl = ConfigReader.GetBaseUrl();
 
         By_AppDiv = GetByClass("app");
-
         By_Button_Primary = GetByClass("button-primary");
         By_Button_Secondary = GetByClass("button-secondary");
+    }
+
+    protected IWebElement WaitForElement(By locator, int? timeoutSeconds = null)
+    {
+        var wait = timeoutSeconds.HasValue
+            ? new WebDriverWait(Driver, TimeSpan.FromSeconds(timeoutSeconds.Value))
+            : Wait;
+
+        return wait.Until(ExpectedConditions.ElementIsVisible(locator));
     }
 
     internal SimulationItemPage GoToSimulationItemPageViaUrl(string simulationId)
@@ -38,6 +45,13 @@ public abstract class BasePage
         return new SimulationItemPage(Driver);
     }
 
+    internal IterationResultPage GoToIterationResultPage(string simulationId, string iterationResultId)
+    {
+        Thread.Sleep(500);
+        Driver.Navigate().GoToUrl(BaseUrl + "/simulation/" + simulationId + "/iteration/" + iterationResultId);
+        return new IterationResultPage(Driver);
+    }
+
     protected IWebElement WaitUntilVisible(By locator)
     {
         return Wait.Until(ExpectedConditions.ElementIsVisible(locator));
@@ -45,26 +59,24 @@ public abstract class BasePage
 
     protected void Click(By locator)
     {
-        var element = WaitUntilVisible(locator);
+        var element = WaitForElement(locator);
         element.Click();
     }
 
     protected void Type(By locator, string text, bool clear = true)
     {
-        var element = WaitUntilVisible(locator);
+        var element = WaitForElement(locator);
         if (clear) element.Clear();
         element.SendKeys(text);
     }
 
     protected string GetElementText(By locator)
     {
-        var element = WaitUntilVisible(locator);
+        var element = WaitForElement(locator);
         string tagName = element.TagName.ToLower();
 
         if (tagName == "input" || tagName == "textarea")
-        {
             return element.GetAttribute("value") ?? string.Empty;
-        }
 
         if (tagName == "select")
         {
@@ -77,23 +89,15 @@ public abstract class BasePage
 
     public int GetElementCount(By locator)
     {
-        try
-        {
-            var elements = Driver.FindElements(locator);
-            int count = elements.Count;
-            return count;
-        }
-        catch (Exception ex)
-        {
-            throw new Exception($"[ERROR] Failed to get element count for {locator}: {ex.Message}");
-        }
+        var elements = Driver.FindElements(locator);
+        return elements.Count;
     }
 
     protected bool IsElementDisplayed(By locator)
     {
         try
         {
-            return WaitUntilVisible(locator).Displayed;
+            return WaitForElement(locator).Displayed;
         }
         catch
         {
@@ -103,7 +107,7 @@ public abstract class BasePage
 
     protected void ScrollToElement(By locator)
     {
-        var element = WaitUntilVisible(locator);
+        var element = WaitForElement(locator);
         ((IJavaScriptExecutor)Driver).ExecuteScript("arguments[0].scrollIntoView(true);", element);
     }
 
@@ -115,6 +119,14 @@ public abstract class BasePage
             throw new ArgumentException("seleniumId cannot be null or empty", nameof(seleniumId));
 
         return By.CssSelector($"[selenium-id='{seleniumId}']");
+    }
+
+    internal By GetAnyBySeleniumId(string seleniumId)
+    {
+        if (string.IsNullOrWhiteSpace(seleniumId))
+            throw new ArgumentException("seleniumId cannot be null or empty", nameof(seleniumId));
+
+        return By.CssSelector($"[selenium-id*='{seleniumId}']");
     }
 
     internal By GetByClass(string className)
@@ -145,19 +157,10 @@ public abstract class BasePage
     {
         try
         {
-            var element = WaitUntilVisible(locator);
-
+            var element = WaitForElement(locator);
             return element.Displayed && element.Enabled;
         }
-        catch (WebDriverTimeoutException)
-        {
-            return false;
-        }
-        catch (NoSuchElementException)
-        {
-            return false;
-        }
-        catch (StaleElementReferenceException)
+        catch
         {
             return false;
         }
@@ -167,9 +170,8 @@ public abstract class BasePage
     {
         try
         {
-            var appDiv = Driver.FindElement(By_AppDiv);
+            var appDiv = WaitForElement(By_AppDiv);
             string html = appDiv.GetAttribute("innerHTML");
-
             bool containsText = html != null && html.IndexOf(text, StringComparison.OrdinalIgnoreCase) >= 0;
 
             AssertHelper.IsTrue(
@@ -177,10 +179,6 @@ public abstract class BasePage
                 $"Expected text '{text}' was not found in the application HTML.",
                 context
             );
-        }
-        catch (NoSuchElementException)
-        {
-            AssertHelper.Fail($"App container element (By_AppDiv) was not found.", context);
         }
         catch (Exception ex)
         {
@@ -196,9 +194,7 @@ public abstract class BasePage
             Thread.Sleep(500);
             retry++;
             if (retry == 100)
-            {
                 throw new Exception("Waiting in loop?");
-            }
         }
     }
 
@@ -209,22 +205,16 @@ public abstract class BasePage
 
         try
         {
-            // Escape single quotes for XPath
             string safeText = text.Replace("'", "&apos;");
-
             string xpath = string.IsNullOrWhiteSpace(tag)
                 ? $"//*[contains(normalize-space(text()), '{safeText}')]"
                 : $"//{tag}[contains(normalize-space(text()), '{safeText}')]";
 
-            var elements = Driver.FindElements(By.XPath(xpath));
-
-            return elements.Any(e => e.Displayed);
+            var wait = new WebDriverWait(Driver, TimeSpan.FromSeconds(10));
+            var element = wait.Until(ExpectedConditions.ElementIsVisible(By.XPath(xpath)));
+            return element.Displayed;
         }
-        catch (NoSuchElementException)
-        {
-            return false;
-        }
-        catch (Exception)
+        catch
         {
             return false;
         }
@@ -234,34 +224,17 @@ public abstract class BasePage
     {
         try
         {
-            var element = Driver.FindElement(locator);
+            var element = WaitForElement(locator);
             bool isSelected = element.Selected;
 
             if (shouldBeSelected)
-            {
-                AssertHelper.IsTrue(
-                    isSelected,
-                    $"Element {locator} is not selected, but should be",
-                    context
-                );
-            }
+                AssertHelper.IsTrue(isSelected, $"Element {locator} is not selected, but should be", context);
             else
-            {
-                AssertHelper.IsFalse(
-                    isSelected,
-                    $"Element {locator} is selected, but should not be",
-                    context
-                );
-            }
-
-        }
-        catch (NoSuchElementException)
-        {
-            AssertHelper.Fail($"Element {locator} has not been selected.", context);
+                AssertHelper.IsFalse(isSelected, $"Element {locator} is selected, but should not be", context);
         }
         catch (Exception ex)
         {
-            AssertHelper.Fail($"Error during asserting if locator{locator} is selected: {ex.Message}", context);
+            AssertHelper.Fail($"Error during asserting if locator {locator} is selected: {ex.Message}", context);
         }
     }
 
@@ -269,21 +242,13 @@ public abstract class BasePage
     {
         try
         {
-            var element = Driver.FindElement(locator);
+            var element = WaitForElement(locator);
             var select = new SelectElement(element);
 
-            try
-            {
-                select.SelectByText(option);
-                return;
-            }
+            try { select.SelectByText(option); return; }
             catch (NoSuchElementException) { }
 
-            try
-            {
-                select.SelectByValue(option);
-                return;
-            }
+            try { select.SelectByValue(option); return; }
             catch (NoSuchElementException) { }
 
             var options = element.FindElements(By.TagName("option"));
@@ -298,13 +263,9 @@ public abstract class BasePage
 
             AssertHelper.Fail($"Cannot find '{option}' in dropdown {locator}.", context);
         }
-        catch (NoSuchElementException)
-        {
-            AssertHelper.Fail($"Dropdown {locator} has not been found.", context);
-        }
         catch (Exception ex)
         {
-            AssertHelper.Fail($"Error during the looking for value: {locator} in dropdown. {ex.Message}", context);
+            AssertHelper.Fail($"Error during the looking for value in dropdown {locator}: {ex.Message}", context);
         }
     }
 
@@ -312,7 +273,7 @@ public abstract class BasePage
     {
         try
         {
-            var element = Driver.FindElement(locator);
+            var element = WaitForElement(locator);
             var select = new SelectElement(element);
 
             var selectedOption = select.SelectedOption;
@@ -331,10 +292,6 @@ public abstract class BasePage
                 context
             );
         }
-        catch (NoSuchElementException)
-        {
-            AssertHelper.Fail($"Dropdown {locator} has not been found.", context);
-        }
         catch (Exception ex)
         {
             AssertHelper.Fail($"Error during the assertion of dropdown value {locator}: {ex.Message}", context);
@@ -346,16 +303,15 @@ public abstract class BasePage
         try
         {
             string currentUrl = Driver.Url;
-
             AssertHelper.IsTrue(
                 currentUrl.Contains(expectedPart, StringComparison.OrdinalIgnoreCase),
-                $"URL '{currentUrl}' does not contains: '{expectedPart}'.",
+                $"URL '{currentUrl}' does not contain: '{expectedPart}'.",
                 context
             );
         }
         catch (Exception ex)
         {
-            AssertHelper.Fail($"Erorr during looking for URL: {ex.Message}", context);
+            AssertHelper.Fail($"Error during URL check: {ex.Message}", context);
         }
     }
 
@@ -363,23 +319,14 @@ public abstract class BasePage
     {
         try
         {
-            var element = Driver.FindElement(locator);
-
-            bool isDisabled = !element.Enabled
-                              || element.GetAttribute("disabled") != null
-                              || element.GetAttribute("aria-disabled") == "true";
-
-            return isDisabled;
+            var element = WaitForElement(locator);
+            return !element.Enabled
+                   || element.GetAttribute("disabled") != null
+                   || element.GetAttribute("aria-disabled") == "true";
         }
-        catch (NoSuchElementException)
+        catch (Exception)
         {
-            AssertHelper.Fail($"[ERROR] Button {locator} was not found on the page.");
-            throw;
-        }
-        catch (Exception ex)
-        {
-            AssertHelper.Fail($"[ERROR] Failed to check button state for {locator}: {ex.Message}");
-            throw;
+            return false;
         }
     }
 
@@ -387,33 +334,15 @@ public abstract class BasePage
     {
         try
         {
-            var element = Driver.FindElement(locator);
-
+            var element = WaitForElement(locator);
             bool isDisabled = !element.Enabled
                               || element.GetAttribute("disabled") != null
                               || element.GetAttribute("aria-disabled") == "true";
 
             if (shouldBeDisabled)
-            {
-                AssertHelper.IsTrue(
-                    isDisabled,
-                    $"Button {locator} should be disabled but it is enabled.",
-                    context
-                );
-            }
+                AssertHelper.IsTrue(isDisabled, $"Button {locator} should be disabled but it is enabled.", context);
             else
-            {
-                AssertHelper.IsFalse(
-                    isDisabled,
-                    $"Button {locator} should be enabled but it is disabled.",
-                    context
-                );
-            }
-
-        }
-        catch (NoSuchElementException)
-        {
-            AssertHelper.Fail($"Button {locator} was not found on the page.", context);
+                AssertHelper.IsFalse(isDisabled, $"Button {locator} should be enabled but it is disabled.", context);
         }
         catch (Exception ex)
         {
@@ -429,31 +358,42 @@ public abstract class BasePage
         try
         {
             string safeText = text.Replace("'", "&apos;");
-
             string xpath = string.IsNullOrWhiteSpace(tag)
                 ? $"//*[contains(normalize-space(text()), '{safeText}')]"
                 : $"//{tag}[contains(normalize-space(text()), '{safeText}')]";
 
-            var element = Driver.FindElement(By.XPath(xpath));
-
-            if (element == null)
-                return false;
-
+            var element = WaitForElement(By.XPath(xpath));
             ((IJavaScriptExecutor)Driver).ExecuteScript("arguments[0].scrollIntoView({ behavior: 'smooth', block: 'center' });", element);
-
             Thread.Sleep(300);
-
             return true;
+        }
+        catch
+        {
+            return false;
+        }
+    }
+
+    public int GetTableCellCount(By tableLocator, string context = "")
+    {
+        try
+        {
+            if (tableLocator == null)
+                throw new ArgumentException("Table  cannot be null or empty.", nameof(tableLocator));
+
+            var tableElement = WaitForElement(tableLocator);
+
+            var cells = tableElement.FindElements(By.TagName("td"));
+            return cells.Count;
         }
         catch (NoSuchElementException)
         {
-            Console.WriteLine($"[ScrollToText] Element with text '{text}' not found.");
-            return false;
+            AssertHelper.Fail($"Table not found.", context);
+            return 0;
         }
         catch (Exception ex)
         {
-            Console.WriteLine($"[ScrollToText] Failed to scroll to '{text}': {ex.Message}");
-            return false;
+            AssertHelper.Fail($"Error while counting <td> elements in table: {ex.Message}", context);
+            return 0;
         }
     }
 }

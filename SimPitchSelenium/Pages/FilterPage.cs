@@ -14,7 +14,6 @@ public class FilterPage : BasePage
 
     internal void SetSortingMethod(string sortingName, string condition = null)
     {
-        WaitForText("Scoreboard:");
         SelectFromDropdown(GetBySeleniumId($"sorting-select"), sortingName, "SetSortingMethod");
         if (!string.IsNullOrEmpty(condition))
         {

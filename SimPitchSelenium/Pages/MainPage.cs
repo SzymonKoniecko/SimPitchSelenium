@@ -35,7 +35,7 @@ public class MainPage : BasePage
         Click(By_PrepareSimulation_Btn);
         return new PrepareSimulationPage(Driver);
     }
-
+    
     internal void AssertIfDisplayed()
     {
         AssertHelper.IsTrue(IsElementDisplayed(By_SystemGoalSection), "Page is not loaded", "MainPage");
