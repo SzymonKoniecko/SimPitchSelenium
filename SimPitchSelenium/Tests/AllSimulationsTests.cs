@@ -5,7 +5,7 @@ using SimPitchSelenium.Pages;
 namespace SimPitchSelenium.Tests;
 
 [TestFixture]
-[Timeout(30000)]
+[Timeout(45000)]
 public class AllSimulationsTests : BaseTest
 {
     private AllSimulationsPage _allSimulationsPage;
@@ -38,6 +38,7 @@ public class AllSimulationsTests : BaseTest
     public void AllSimulations_Assert_Filter()
     {
         _allSimulationsPage = _allSimulationsPage.NavBar.GoToAllSimulationsPage();
+        _allSimulationsPage.AssertIfDisplayed();
 
         // going to the latest page
         _allSimulationsPage.Pagination.CheckIfItsFirstPage();

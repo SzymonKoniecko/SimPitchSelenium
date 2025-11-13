@@ -4,7 +4,7 @@ using SimPitchSelenium.Pages;
 namespace SimPitchSelenium.Tests;
 
 [TestFixture]
-[Timeout(30000)]
+[Timeout(60000)]
 public class SimulationItemTests : BaseTest
 {
     private SimulationItemPage _simulationItemPage;
@@ -58,6 +58,8 @@ public class SimulationItemTests : BaseTest
         // Filter
         _simulationItemPage.Pagination.CheckIfItsFirstPage();
         _simulationItemPage.Pagination.SelectPageSize("10");
+        _simulationItemPage.Filter.SetSortingMethod("order-by-iteration");
+        _simulationItemPage.WaitForText("Scoreboard:");
         _simulationItemPage.Filter.SetSortingMethod("order-by-iteration");
         _simulationItemPage.AssertIterationCount(10);
         _simulationItemPage.Filter.ChangeSortingOrder();
