@@ -1,4 +1,5 @@
 using System;
+using System.Globalization;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Support.UI;
 using SeleniumExtras.WaitHelpers;
@@ -104,6 +105,86 @@ public abstract class BasePage
         catch (StaleElementReferenceException)
         {
             return false;
+        }
+    }
+
+    public int GetTableCellCount(By tableLocator, string context = "")
+    {
+        try
+        {
+            if (tableLocator == null)
+                throw new ArgumentException("Table  cannot be null or empty.", nameof(tableLocator));
+
+            var tableElement = WaitForElement(tableLocator);
+
+            var cells = tableElement.FindElements(By.TagName("td"));
+            return cells.Count;
+        }
+        catch (NoSuchElementException)
+        {
+            AssertHelper.Fail($"Table not found.", context);
+            return 0;
+        }
+        catch (Exception ex)
+        {
+            AssertHelper.Fail($"Error while counting <td> elements in table: {ex.Message}", context);
+            return 0;
+        }
+    }
+
+    public void SetRangeValue(By locator, int value, string context = "")
+    {
+        try
+        {
+            var element = WaitForElement(locator);
+
+            string minStr = element.GetAttribute("min") ?? "0";
+            string maxStr = element.GetAttribute("max") ?? "100";
+            string stepStr = element.GetAttribute("step") ?? "1";
+
+            int min = int.Parse(minStr, CultureInfo.InvariantCulture);
+            int max = int.Parse(maxStr, CultureInfo.InvariantCulture);
+            int step = int.Parse(stepStr, CultureInfo.InvariantCulture);
+
+            if (value < min || value > max)
+                AssertHelper.Fail($"Value {value} is outside range {min}-{max} for slider {locator}.", context);
+
+            if ((value - min) % step != 0)
+                AssertHelper.Fail($"Value {value} does not match slider step {step} for {locator}.", context);
+
+            ((IJavaScriptExecutor)Driver).ExecuteScript(@"
+            arguments[0].value = arguments[1];
+            arguments[0].dispatchEvent(new Event('input', { bubbles: true }));
+            arguments[0].dispatchEvent(new Event('change', { bubbles: true }));
+        ", element, value);
+
+            Thread.Sleep(200);
+        }
+        catch (Exception ex)
+        {
+            AssertHelper.Fail($"Failed to set range input value for {locator}: {ex.Message}", context);
+        }
+    }
+    
+    public void SetRangeValue(By locator, float value, string context = "")
+    {
+        try
+        {
+            var slider = WaitUntilVisible(locator);
+
+            ((IJavaScriptExecutor)Driver).ExecuteScript(
+                "arguments[0].value = arguments[1]; arguments[0].dispatchEvent(new Event('input')); arguments[0].dispatchEvent(new Event('change'));",
+                slider,
+                value.ToString(CultureInfo.InvariantCulture)
+            );
+        }
+        catch (NoSuchElementException)
+        {
+            AssertHelper.Fail($"Slider {locator} was not found on the page.", context);
+        }
+        catch (Exception ex)
+        {
+            AssertHelper.Fail($"Error while setting slider value for {locator}: {ex.Message}", context);
         }
     }
 }
