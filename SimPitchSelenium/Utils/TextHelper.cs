@@ -1,4 +1,5 @@
 using System;
+using System.Globalization;
 using SimPitchSelenium.Reports;
 using SimPitchSelenium.Tests;
 
@@ -34,6 +35,20 @@ public static class TextHelper
         }
     }
 
+    public static void AssertTextNotContains(string actual, string unexpectedSubstring, string context = "")
+    {
+        try
+        {
+            Assert.That(actual, Does.Not.Contain(unexpectedSubstring),
+                $"Text should not contain substring in {context}\nUnexpected substring: '{unexpectedSubstring}'\nActual: '{actual}'");
+        }
+        catch (AssertionException ex)
+        {
+            AssertHelper.HandleAssertionFailure(ex, context);
+            throw;
+        }
+    }
+
     public static void AssertTextNotEmpty(string actual, string context = "")
     {
         try
@@ -46,6 +61,19 @@ public static class TextHelper
         {
             AssertHelper.HandleAssertionFailure(ex, context);
             throw;
+        }
+    }
+
+    public static string GetFormattedCurrentDate(string format = "dd/MM/yyyy")
+    {
+        try
+        {
+            return DateTime.Now.ToString(format, CultureInfo.InvariantCulture);
+        }
+        catch (FormatException)
+        {
+            Console.WriteLine($"Incorrect date format: '{format}'. Returned default: (dd/MM/yyyy).");
+            return DateTime.Now.ToString("dd/MM/yyyy", CultureInfo.InvariantCulture);
         }
     }
 }
