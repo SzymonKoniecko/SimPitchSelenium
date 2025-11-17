@@ -33,7 +33,10 @@ public class PaginationPage : BasePage
 
     internal void GoToNextPage()
     {
-        Click(By_Next_Button);
+        if (!IsButtonDisabled(By_Next_Button))
+        {
+            Click(By_Next_Button);
+        }
     }
 
     internal void CheckIfItsFirstPage()
@@ -46,6 +49,7 @@ public class PaginationPage : BasePage
         while (!IsButtonDisabled(By_Next_Button))
         {
             GoToNextPage();
+            Thread.Sleep(500);
         }
     }
 
