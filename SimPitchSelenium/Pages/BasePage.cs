@@ -381,8 +381,9 @@ public abstract class BasePage
         {
             if (tableLocator == null)
                 throw new ArgumentException("Table  cannot be null or empty.", nameof(tableLocator));
-
+            
             var tableElement = WaitForElement(tableLocator);
+            Thread.Sleep(500); // he is doing too fast, even with WaitForElement
 
             var cells = tableElement.FindElements(By.TagName("td"));
             return cells.Count;
