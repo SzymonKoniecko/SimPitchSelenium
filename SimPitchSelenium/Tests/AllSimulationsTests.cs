@@ -21,6 +21,7 @@ public class AllSimulationsTests : BaseTest
             var prepPage = _allSimulationsPage.NavBar.GoToPrepareSimualationPage();
             for (int i = totalCount; i < 7; i++) // add simulations to have more than 6 for pagination
             {
+                prepPage.NavBar.GoToPrepareSimualationPage();
                 prepPage.StartAnySimulation();
             }
             prepPage.NavBar.GoToAllSimulationsPage();
