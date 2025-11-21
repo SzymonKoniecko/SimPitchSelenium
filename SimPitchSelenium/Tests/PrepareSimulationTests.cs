@@ -25,6 +25,7 @@ public class PrepareSimulationTests : BaseTest
         _prepareSimulationPage.AssertValidationErrors(
             "You must select a league", "Select at least one season");
         _prepareSimulationPage.SelectTitle("AB");
+        _prepareSimulationPage.SelectModel("Advanced");
         _prepareSimulationPage.ClickStartSimulation();
         _prepareSimulationPage.AssertValidationErrors(
             "Title must have at least 3 characters",
@@ -35,7 +36,7 @@ public class PrepareSimulationTests : BaseTest
     [Test]
     public void PrepareSimulation_Should_Reset_Form_To_Default_State()
     {
-        PrepareSimulationModel model = new()
+        PrepareSimulationModel prep = new()
         {
             // Add leagueRound (in future)
             isSeason2022_2023 = true,
@@ -45,13 +46,15 @@ public class PrepareSimulationTests : BaseTest
             League = "betclic-1-liga",
             NumberOfIterations = 999,
             CreateScoreboards = true,
+            Model = "DixonColes"
         };
 
-        _prepareSimulationPage.PrepareSimulationByModel(model, startSimulation: false);
-        _prepareSimulationPage.AssertPrepareSimulationByModel(model);
+        _prepareSimulationPage.PrepareSimulationByModel(prep, startSimulation: false);
+        _prepareSimulationPage.AssertPrepareSimulationByModel(prep);
 
         _prepareSimulationPage.ClickResetForm();
         _prepareSimulationPage.AssertSelectedSeasonYears();
+        _prepareSimulationPage.AssertSelectedModel(prep.Model);
     }
 
     [Test]
@@ -98,8 +101,8 @@ public class PrepareSimulationTests : BaseTest
             "Percentage: 100%",
             "Scoreboards are created during the simulation? -> true <-");
         allSimulationsPage.AssertClosedSimulationDetails(0,
-            "Iterations:\n2\nSeed:\n1000\nGames to reach trust:\n15\nConfidence level:\n1.05\nNoise factor:"+
-            "\n0.12\nHome advantage:\n1.05\nSeason years used in simulation:\n2022/2023\n2025/2026");
+            "Iterations:\n2\nSeed:\n1000\nGames to reach trust:\n15\nConfidence level:\n1.05\nNoise factor:\n0.12\n"+
+            "Home advantage:\n1.05\nSeason years used in simulation:\n2022/2023 -- Used strength (avg goals in season):\n2025/2026 -- Used strength (avg goals in season):");
     }
 
     [Test]
@@ -121,7 +124,8 @@ public class PrepareSimulationTests : BaseTest
             GamesToReachTrust = 18,
             ConfidenceLevel = 0.98f,
             NoiseFactor = 0.13f,
-            HomeAdvantage = 1.06f
+            HomeAdvantage = 1.06f,
+            Model = "BivariatePoisson"
         };
 
         _prepareSimulationPage.PrepareSimulationByModel(model, true);
@@ -133,6 +137,7 @@ public class PrepareSimulationTests : BaseTest
         simulationItemPage.AssertIfDisplayed(simulationId);
         simulationItemPage.AssertSimulationParams(
             "League: PKO BP Ekstraklasa",
+            "Model: BivariatePoisson",
             "Iterations: 2",
             "Seasons: 2022/2023, 2023/2024, 2024/2025, 2025/2026",
             "Seed: 1000",
@@ -147,12 +152,13 @@ public class PrepareSimulationTests : BaseTest
             model.Title,
             "State: Completed",
             "League: PKO BP Ekstraklasa",
+            "Model: BivariatePoisson",
             $"Created: {TextHelper.GetFormattedCurrentDate()}",
             "Completed iterations: 2 / 2",
             "Percentage: 100%",
             "Scoreboards are created during the simulation? -> true <-");
         allSimulationsPage.AssertClosedSimulationDetails(0,
             "Iterations:\n2\nSeed:\n1000\nGames to reach trust:\n18\nConfidence level:\n0.98\nNoise factor:"+
-            "\n0.13\nHome advantage:\n1.06\nSeason years used in simulation:\n2022/2023\n2023/2024\n2024/2025\n2025/2026");
+            "\n0.13\nHome advantage:\n1.06");
     }
 }

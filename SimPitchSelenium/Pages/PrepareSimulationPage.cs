@@ -1,3 +1,4 @@
+using System.Net.Sockets;
 using OpenQA.Selenium;
 using SimPitchSelenium.Models;
 using SimPitchSelenium.Utils;
@@ -27,6 +28,7 @@ public class PrepareSimulationPage : BasePage
     internal By By_CreatedSimulation_Message;
     internal By By_CreatedSimulation_Button;
     internal By By_Validation_Error;
+    internal string[] simulationModels;
     public PrepareSimulationPage(IWebDriver webDriver) : base(driver: webDriver)
     {
         By_Title = GetBySeleniumId("title-prepare-simulation");
@@ -55,6 +57,7 @@ public class PrepareSimulationPage : BasePage
         By_CreatedSimulation_Button = GetBySeleniumId("simulation-result");
         By_Validation_Error = GetByClass("validation-error");
 
+        simulationModels = new[] {"StandardPoisson", "DixonColes", "BivariatePoisson", "Advanced"};
     }
 
     internal string GetSimulationId()
@@ -159,6 +162,11 @@ public class PrepareSimulationPage : BasePage
         Click(By_CreateScoreboards_Checkbox);
     }
 
+    internal void SelectModel(string value)
+    {
+        Click(GetBySeleniumId($"model-{value}"));
+    }
+
     internal void ClickStartSimulation()
     {
         Click(base.By_Button_Primary);
@@ -191,6 +199,11 @@ public class PrepareSimulationPage : BasePage
         AssertIfSelected(By_Season_2023_2024_CheckBox, isSeason2023_2024);
         AssertIfSelected(By_Season_2024_2025_CheckBox, isSeason2024_2025);
         AssertIfSelected(By_Season_2025_2026_CheckBox, isSeason2025_2026);
+    }
+
+    internal void AssertSelectedModel(string value)
+    {
+        AssertIfSelected(GetBySeleniumId($"model-{value}"));
     }
 
     internal void AssertTitle(string expectedTitle)
@@ -257,7 +270,9 @@ public class PrepareSimulationPage : BasePage
 
     internal void StartAnySimulation(int iterations = 2)
     {
-        PrepareSimulationModel model = new()
+        Random rand = new();
+
+        PrepareSimulationModel prep = new()
         {
             isSeason2022_2023 = true,
             isSeason2025_2026 = true,
@@ -265,12 +280,13 @@ public class PrepareSimulationPage : BasePage
             Title = "Any test - " + DateTime.Now,
             League = "pko-bp-ekstraklasa",
             NumberOfIterations = iterations,
+            Model = simulationModels[rand.Next(0,4)]
         };
-
-        SelectSeasonYears(model);
-        SelectTitle(model.Title);
-        SelectLeague(model.League);
-        SelectNumberOfIterations(model.NumberOfIterations);
+        SelectSeasonYears(prep);
+        SelectTitle(prep.Title);
+        SelectLeague(prep.League);
+        SelectModel(prep.Model);
+        SelectNumberOfIterations(prep.NumberOfIterations);
 
         ClickStartSimulation();
 
@@ -283,6 +299,8 @@ public class PrepareSimulationPage : BasePage
         SelectLeague(model.League);
         SelectNumberOfIterations(model.NumberOfIterations);
 
+        if (model.Model != null)
+            SelectModel(model.Model);
         if (model.Title != null)
             SelectTitle(model.Title);
         if (model.Seed != null)
@@ -312,6 +330,8 @@ public class PrepareSimulationPage : BasePage
         AssertLeague(model.League);
         AssertNumberOfIterations(model.NumberOfIterations.ToString());
 
+        if (model.Model != null)
+            AssertSelectedModel(model.Model);
         if (model.Title != null)
             AssertTitle(model.Title);
         if (model.Seed != null)
