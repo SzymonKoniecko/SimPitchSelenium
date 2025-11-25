@@ -14,6 +14,7 @@ public class PrepareSimulationPage : BasePage
     internal By By_Season_2025_2026_CheckBox;
     internal By By_Title_Input;
     internal By By_League_Input;
+    internal By By_LeagueRound_Input;
     internal By By_NumberIteration_Input;
     internal By By_Seed_Input;
     internal By By_GamesToReachTrust_Range;
@@ -39,6 +40,7 @@ public class PrepareSimulationPage : BasePage
         By_Season_2025_2026_CheckBox = GetByValue("2025/2026");
         By_Title_Input = GetBySeleniumId("input-title");
         By_League_Input = GetById("leagueId");
+        By_LeagueRound_Input = GetById("leagueRoundId");
         By_NumberIteration_Input = GetBySeleniumId("input-iterations");
 
         By_Seed_Input = GetBySeleniumId("seed");
@@ -57,7 +59,7 @@ public class PrepareSimulationPage : BasePage
         By_CreatedSimulation_Button = GetBySeleniumId("simulation-result");
         By_Validation_Error = GetByClass("validation-error");
 
-        simulationModels = new[] {"StandardPoisson", "DixonColes", "BivariatePoisson", "Advanced"};
+        simulationModels = new[] { "StandardPoisson", "DixonColes", "BivariatePoisson", "Advanced" };
     }
 
     internal string GetSimulationId()
@@ -121,6 +123,11 @@ public class PrepareSimulationPage : BasePage
     internal void SelectLeague(string leagueName)
     {
         SelectFromDropdown(By_League_Input, leagueName, "PrepareSimulationPage");
+    }
+
+    internal void SelectLeagueRound(int roundNumber)
+    {
+        SelectFromDropdown(By_LeagueRound_Input, "round:" + roundNumber, "PrepareSimulationPage");
     }
 
     internal void SelectNumberOfIterations(int iterationsNumber)
@@ -221,6 +228,11 @@ public class PrepareSimulationPage : BasePage
         AssertDropdownValue(By_League_Input, expectedLeague, "PrepareSimulationPage");
     }
 
+    internal void AssertLeagueRound(int expectedLeagueRound)
+    {
+        AssertDropdownValue(By_LeagueRound_Input, expectedLeagueRound.ToString(), "PrepareSimulationPage");
+    }
+
     internal void AssertSeed(int expectedSeed)
     {
         TextHelper.AssertTextEquals(GetElementText(By_Seed_Input), expectedSeed.ToString(), "PrepareSimulationPage");
@@ -280,7 +292,7 @@ public class PrepareSimulationPage : BasePage
             Title = "Any test - " + DateTime.Now,
             League = "pko-bp-ekstraklasa",
             NumberOfIterations = iterations,
-            Model = simulationModels[rand.Next(0,4)]
+            Model = simulationModels[rand.Next(0, 4)]
         };
         SelectSeasonYears(prep);
         SelectTitle(prep.Title);
@@ -291,14 +303,17 @@ public class PrepareSimulationPage : BasePage
         ClickStartSimulation();
 
         AssertStartedSimulationMessage();
-    }    
-    
+    }
+
     internal void PrepareSimulationByModel(PrepareSimulationModel model, bool startSimulation = false)
     {
         SelectSeasonYears(model);
         SelectLeague(model.League);
         SelectNumberOfIterations(model.NumberOfIterations);
 
+        
+        if (model.LeagueRound != null)
+            SelectLeagueRound(model.LeagueRound.Value);
         if (model.Model != null)
             SelectModel(model.Model);
         if (model.Title != null)
@@ -330,6 +345,8 @@ public class PrepareSimulationPage : BasePage
         AssertLeague(model.League);
         AssertNumberOfIterations(model.NumberOfIterations.ToString());
 
+        if (model.LeagueRound != null)
+            AssertLeagueRound(model.LeagueRound.Value);
         if (model.Model != null)
             AssertSelectedModel(model.Model);
         if (model.Title != null)
