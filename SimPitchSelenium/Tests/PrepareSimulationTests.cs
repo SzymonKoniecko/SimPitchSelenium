@@ -112,7 +112,7 @@ public class PrepareSimulationTests : BaseTest
         {
             //isSeason2022_2023 = true,
             //isSeason2023_2024 = true,
-            //isSeason2024_2025 = true,
+            isSeason2024_2025 = true,
 
             Title = $"Selenium {TestContext.CurrentContext.Test.Name} - {rand.Next(0, 99)}",
             League = "pko-bp-ekstraklasa",
