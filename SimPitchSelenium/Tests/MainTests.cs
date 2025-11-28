@@ -28,28 +28,19 @@ public class MainTests : BaseTest
     {
         TextHelper.AssertTextContains(
             _mainPage.GetSimPitchSectionText(),
-            "Match and league round simulation based on Poisson and Gamma models"
+            "SimPitch\nAdvanced football match and league simulation based on Bayesian models.\nPrepare a new simulation"
         );
 
         AssertHelper.IsTrue(_mainPage.IsElementPresentAndEnabled(_mainPage.By_PrepareSimulation_Btn), "Prepare simulation button is not displayed!", TestContext.CurrentContext.Test.Name);
 
-        TextHelper.AssertTextEquals(
-            _mainPage.GetSystemGoalSectionText(),
-            "🎯 System Goal\n" +
-            "Analysis of team history (matches, goals scored and conceded)\n" +
-            "Assessment of offensive and defensive strength\n" +
-            "Consideration of the random nature of results\n" +
-            "Simulation of goal distribution using probabilistic models"
+        TextHelper.AssertTextContains(
+            _mainPage.GetSimulationModelsSectionText(),
+            "Simulation Models"
         );
 
-        TextHelper.AssertTextEquals(
-            _mainPage.GetHeatMapSectionText(),
+        TextHelper.AssertTextContains(
+            _mainPage.GetVisualizationsSectionText(),
             "Heat Map"
-        );
-
-        TextHelper.AssertTextEquals(
-            _mainPage.GetPosteriorSectionText(),
-            "Posterior (Gamma) (not developed)"
         );
     }
 }

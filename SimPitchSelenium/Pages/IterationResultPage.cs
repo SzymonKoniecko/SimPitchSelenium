@@ -9,11 +9,13 @@ public class IterationResultPage : BasePage
     protected By By_Table_Scoreboard;
     protected By By_Match;
     protected By By_Li_SimulatedMatches;
+    protected By By_SimulatedMatch_label;
     public IterationResultPage(IWebDriver webDriver) : base(webDriver)
     {
         By_Table_Scoreboard = GetBySeleniumId("scoreboard_complete_details");
         By_Match = GetBySeleniumId("match");
         By_Li_SimulatedMatches = GetBySeleniumId("number-simulated-matches");
+        By_SimulatedMatch_label = GetBySeleniumId("simulated");
     }
 
     public int GetNumberOfSimulatedMatches()
@@ -39,7 +41,7 @@ public class IterationResultPage : BasePage
     {
         AssertHelper.AreEqual(
             GetNumberOfSimulatedMatches(), 
-            GetElementCount(By_Match), 
+            GetElementCount(By_SimulatedMatch_label), 
             "AssertNumOfSimulatedMatches"
         );
     }

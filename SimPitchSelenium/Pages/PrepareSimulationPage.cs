@@ -200,7 +200,7 @@ public class PrepareSimulationPage : BasePage
         bool isSeason2022_2023 = false,
         bool isSeason2023_2024 = false,
         bool isSeason2024_2025 = false,
-        bool isSeason2025_2026 = false)
+        bool isSeason2025_2026 = true)
     {
         AssertIfSelected(By_Season_2022_2023_CheckBox, isSeason2022_2023);
         AssertIfSelected(By_Season_2023_2024_CheckBox, isSeason2023_2024);

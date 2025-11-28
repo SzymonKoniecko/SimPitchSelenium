@@ -7,17 +7,17 @@ namespace SimPitchSelenium.Pages;
 public class MainPage : BasePage
 {
     protected By By_SimPitchSection;
-    protected By By_SystemGoalSection;
-    protected By By_HeatMapSection;
+    protected By By_SimulationModelsSection;
+    protected By By_VisualizationsSection;
     protected By By_PostieriorSection;
     internal By By_PrepareSimulation_Btn;
 
     public MainPage(IWebDriver webDriver) : base(driver: webDriver)
     {
         By_SimPitchSection = GetByClass("hero");
-        By_SystemGoalSection = GetBySeleniumId("system-goal");
+        By_SimulationModelsSection = GetBySeleniumId("simulation-models");
 
-        By_HeatMapSection = GetBySeleniumId("using-example-1");
+        By_VisualizationsSection = GetBySeleniumId("visualizations");
         By_PostieriorSection = GetBySeleniumId("using-example-2");
 
         By_PrepareSimulation_Btn = GetBySeleniumId("prepareSimulation");
@@ -38,7 +38,7 @@ public class MainPage : BasePage
     
     internal void AssertIfDisplayed()
     {
-        AssertHelper.IsTrue(IsElementDisplayed(By_SystemGoalSection), "Page is not loaded", "MainPage");
+        AssertHelper.IsTrue(IsElementDisplayed(By_SimulationModelsSection), "Page is not loaded", "MainPage");
     }
 
     public string GetSimPitchSectionText()
@@ -46,14 +46,14 @@ public class MainPage : BasePage
         return GetElementText(By_SimPitchSection);
     }
 
-    public string GetSystemGoalSectionText()
+    public string GetSimulationModelsSectionText()
     {
-        return GetElementText(By_SystemGoalSection);
+        return GetElementText(By_SimulationModelsSection);
     }
 
-    public string GetHeatMapSectionText()
+    public string GetVisualizationsSectionText()
     {
-        return GetElementText(By_HeatMapSection);
+        return GetElementText(By_VisualizationsSection);
     }
     
     public string GetPosteriorSectionText()

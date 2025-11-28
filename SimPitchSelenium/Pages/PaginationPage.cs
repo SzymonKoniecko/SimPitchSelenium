@@ -56,5 +56,6 @@ public class PaginationPage : BasePage
     internal void SelectPageSize(string size)
     {
         SelectFromDropdown(GetBySeleniumId($"size-select"), size, "SelectPageSize");
+        Thread.Sleep(500);
     }
 }

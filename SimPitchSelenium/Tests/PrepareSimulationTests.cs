@@ -23,14 +23,13 @@ public class PrepareSimulationTests : BaseTest
     {
         _prepareSimulationPage.ClickStartSimulation();
         _prepareSimulationPage.AssertValidationErrors(
-            "You must select a league", "Select at least one season");
+            "You must select a league");
         _prepareSimulationPage.SelectTitle("AB");
         _prepareSimulationPage.SelectModel("Advanced");
         _prepareSimulationPage.ClickStartSimulation();
         _prepareSimulationPage.AssertValidationErrors(
             "Title must have at least 3 characters",
-            "You must select a league",
-            "Select at least one season");
+            "You must select a league");
     }
 
     [Test]
@@ -38,7 +37,6 @@ public class PrepareSimulationTests : BaseTest
     {
         PrepareSimulationModel prep = new()
         {
-            // Add leagueRound (in future)
             isSeason2022_2023 = true,
             isSeason2025_2026 = true,
 
