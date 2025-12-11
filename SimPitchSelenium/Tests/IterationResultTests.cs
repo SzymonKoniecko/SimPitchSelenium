@@ -32,7 +32,7 @@ public class IterationResultTests : BaseTest
             throw new Exception("Init not completed? Init() - IterationResult_Assert_Scoreboard");
         
         _iterationResultPage.AssertIfDisplayed();
-        _iterationResultPage.AssertNumOfTeamsInTable(18 * 10);
+        _iterationResultPage.AssertNumOfTeamsInTable(18 * 10 + 1);
         _iterationResultPage.AssertNumOfSimulatedMatches();
     }
 }

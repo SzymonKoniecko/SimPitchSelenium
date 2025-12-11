@@ -22,7 +22,7 @@ public class NavigationTests : BaseTest
 
         TextHelper.AssertTextEquals(
             _mainPage.NavBar.GetLogoText(),
-            "⚽ SimPitch"
+            "SimPitch ⚽"
         );
         TextHelper.AssertTextEquals(
             _mainPage.NavBar.GetHomeBtnText(),

@@ -17,7 +17,7 @@ public class FilterPage : BasePage
         SelectFromDropdown(GetBySeleniumId($"sorting-select"), sortingName, "SetSortingMethod");
         if (!string.IsNullOrEmpty(condition))
         {
-            SelectFromDropdown(GetBySeleniumId($"dynamic-select"), condition, "SetSortingMethod-condition");
+            SelectFromDropdown(GetBySeleniumId($"condition-select"), condition, "SetSortingMethod-condition");
         }
     }
 

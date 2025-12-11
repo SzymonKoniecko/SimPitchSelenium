@@ -299,6 +299,7 @@ public class PrepareSimulationPage : BasePage
         SelectLeague(prep.League);
         SelectModel(prep.Model);
         SelectNumberOfIterations(prep.NumberOfIterations);
+        AssertNumberOfIterations(prep.NumberOfIterations.ToString());
 
         ClickStartSimulation();
 

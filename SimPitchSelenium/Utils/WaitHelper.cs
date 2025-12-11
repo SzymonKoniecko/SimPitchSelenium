@@ -11,4 +11,9 @@ public static class WaitHelper
         var wait = new WebDriverWait(driver, TimeSpan.FromSeconds(timeout));
         return wait.Until(drv => drv.FindElement(locator));
     }
+
+    internal static void Sleep()
+    {
+        Thread.Sleep(1500);
+    }
 }

@@ -1,10 +1,11 @@
 using System;
 using SimPitchSelenium.Pages;
+using SimPitchSelenium.Utils;
 
 namespace SimPitchSelenium.Tests;
 
 [TestFixture]
-[Timeout(60000)]
+[Timeout(40000)]
 public class SimulationItemTests : BaseTest
 {
     private SimulationItemPage _simulationItemPage;
@@ -53,13 +54,18 @@ public class SimulationItemTests : BaseTest
         _simulationItemPage.AssertIterationCount(10);
         _simulationItemPage.Pagination.GoToLatestPage();
         _simulationItemPage.Pagination.SelectPageSize("5");
+        WaitHelper.Sleep();
+        _simulationItemPage.WaitForText("Check complete iteration details");
         _simulationItemPage.AssertIterationCount(5);
 
         // Filter
         _simulationItemPage.Pagination.CheckIfItsFirstPage();
         _simulationItemPage.Pagination.SelectPageSize("10");
+        WaitHelper.Sleep();
+        _simulationItemPage.WaitForText("Check complete iteration details");
         _simulationItemPage.Filter.SetSortingMethod("order-by-iteration");
-        _simulationItemPage.WaitForText("Scoreboard:");
+        WaitHelper.Sleep();
+        _simulationItemPage.WaitForText("Check complete iteration details");
         _simulationItemPage.Filter.SetSortingMethod("order-by-iteration");
         _simulationItemPage.AssertIterationCount(10);
         _simulationItemPage.Filter.ChangeSortingOrder();
@@ -67,7 +73,7 @@ public class SimulationItemTests : BaseTest
         _simulationItemPage.AssertTextDisplayed("Toggle Ascending");
 
         _simulationItemPage.Filter.SetSortingMethod("team", "jagiellonia-bialystok");
-        _simulationItemPage.AssertTextDisplayed("Scoreboard:");
+        _simulationItemPage.WaitForText("Check complete iteration details");
     }
 
     [Test]
@@ -79,6 +85,7 @@ public class SimulationItemTests : BaseTest
         _simulationItemPage = _mainPage.GoToSimulationItemPageViaUrl(SimulationId);
         _simulationItemPage.AssertIfDisplayed(SimulationId);
         _simulationItemPage.WaitForCompletedSimulation();
+        WaitHelper.Sleep();
         
         _simulationItemPage.AssertPercentSumEquals100(0, "Team row index 0");
         _simulationItemPage.AssertPercentSumEquals100(10, "Team row index 10");

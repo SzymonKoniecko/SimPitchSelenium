@@ -39,18 +39,16 @@ public class SimulationItemPage : BasePage
 
     internal string GetCompletedIterationsString()
     {
-        return GetElementText(By_Simulation_Iterations)
-                .Split("Completed iterations: ")[1]
+        return GetElementText(By_Simulation_Iterations).Split("\n")[1].Split("/")[1]
                 .ToString()
                 .Trim();
     }
 
     internal string GetSimulationState()
     {
-        return GetElementText(By_Simulation_State)
-                .Split("State: ")[1]
+        return GetElementText(By_Simulation_State).Split("\n")[1]
                 .ToString()
-                .Trim();
+                .Trim();;
     }
 
     internal void WaitForCompletedSimulation()
@@ -79,7 +77,7 @@ public class SimulationItemPage : BasePage
     internal void AssertIterationCount(int expectedCount)
     {
         Thread.Sleep(200);
-        WaitForText("Scoreboard:");
+        WaitForText("Check complete iteration details");
         AssertHelper.AreEqual(expectedCount, GetElementCount(By_Iteration));
     }
 

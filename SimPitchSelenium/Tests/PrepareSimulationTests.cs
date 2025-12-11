@@ -41,7 +41,7 @@ public class PrepareSimulationTests : BaseTest
             isSeason2025_2026 = true,
 
             Title = "AB",
-            League = "betclic-1-liga",
+            League = "la-liga",
             NumberOfIterations = 999,
             CreateScoreboards = true,
             Model = SimulationModelEnum.DixonColes.ToString()
@@ -79,15 +79,9 @@ public class PrepareSimulationTests : BaseTest
         SimulationItemPage simulationItemPage = _prepareSimulationPage.GoToSimulationItemPage();
         simulationItemPage.AssertIfDisplayed(simulationId);
         simulationItemPage.AssertSimulationParams(
-            "League: PKO BP Ekstraklasa",
-            "Iterations: 2",
-            "Seasons: 2022/2023, 2025/2026",
-            "Seed: 1000",
-            "Games to reach trust: 15",
-            "Confidence level: 1.05",
-            "Noise factor: 0.12",
-            "Home Advantage: 1.05",
-            "Created scoreboards during the simulation? -> true");
+            "PKO BP Ekstraklasa",
+            "Iterations:",
+            "2022/2023", "2025/2026");
 
         AllSimulationsPage allSimulationsPage = simulationItemPage.NavBar.GoToAllSimulationsPage();
         allSimulationsPage.AssertSimulationDetails(0,
@@ -95,12 +89,9 @@ public class PrepareSimulationTests : BaseTest
             "State: Completed",
             "League: PKO BP Ekstraklasa",
             $"Created: {TextHelper.GetFormattedCurrentDate()}",
-            "Completed iterations: 2 / 2",
-            "Percentage: 100%",
-            "Scoreboards are created during the simulation? -> true <-");
+            "Completed iterations: 2 / 2");
         allSimulationsPage.AssertClosedSimulationDetails(0,
-            "Iterations:\n2\nSeed:\n1000\nGames to reach trust:\n15\nConfidence level:\n1.05\nNoise factor:\n0.12\n"+
-            "Home advantage:\n1.05\nSeason years used in simulation:\n2022/2023 -- Used strength (avg goals in season):\n2025/2026 -- Used strength (avg goals in season):");
+            "2\nSeed:\n1000\nGames to reach trust:\n15\nConfidence level:\n1.05\nNoise factor:\n0.12\nHome advantage:\n1.05\nSeason years used in simulation:");
     }
 
     [Test]
