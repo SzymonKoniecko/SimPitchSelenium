@@ -46,7 +46,7 @@ public class NavigationTests : BaseTest
     public void Nav_Should_Each_Element_Work()
     {
         _mainPage.NavBar.AssertIfNavBarDisplayed();
-
+        
         var prepPage = _mainPage.NavBar.GoToPrepareSimualationPage();
         prepPage.AssertIfDisplayed();
 
