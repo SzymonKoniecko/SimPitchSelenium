@@ -1,6 +1,5 @@
-using System;
 using OpenQA.Selenium;
-using SimPitchSelenium.Drivers;
+using NUnit.Framework;
 using SimPitchSelenium.Reports;
 using SimPitchSelenium.Utils;
 
@@ -8,37 +7,53 @@ namespace SimPitchSelenium.Tests;
 
 public abstract class BaseTest
 {
-    protected IWebDriver Driver;
-    public static IWebDriver DriverInstance { get; private set; }
-    protected string BaseUrl;
+    protected IWebDriver Driver = default!;
+    protected string BaseUrl = default!;
+
+    [ThreadStatic]
+    private static IWebDriver? _driverInstance;
+
+    public static IWebDriver DriverInstance
+        => _driverInstance ?? throw new InvalidOperationException("DriverInstance not initialized for this thread.");
 
     [SetUp]
     public void SetUp()
     {
-        BaseUrl = ConfigReader.GetBaseUrl();
-        var browser = ConfigReader.GetBrowser();
-        var headless = ConfigReader.GetHeadless();
-
-        Driver = WebDriverFactory.CreateDriver(browser, headless);
-        DriverInstance = Driver;
+        Driver = WebDriverFactory.CreateDriver();
+        _driverInstance = Driver;
     }
 
     [TearDown]
     public void TearDown()
     {
-        var outcome = TestContext.CurrentContext.Result.Outcome.Status;
-        var testName = TestContext.CurrentContext.Test.Name;
-
-        if (outcome == NUnit.Framework.Interfaces.TestStatus.Failed && Driver != null)
+        try
         {
-            ErrorReporter.CaptureFailure(Driver, testName);
-            Thread.Sleep(1000);
+            var status = TestContext.CurrentContext.Result.Outcome.Status;
+            var testName = TestContext.CurrentContext.Test.Name;
+
+            if (status == NUnit.Framework.Interfaces.TestStatus.Failed)
+            {
+                try
+                {
+                    ErrorReporter.CaptureFailure(Driver, testName);
+                }
+                catch
+                {
+                }
+            }
         }
-
-        if (Driver != null)
+        finally
         {
-            try { Driver.Quit(); }
-            finally { Driver.Dispose(); }
+            try
+            {
+                Driver?.Quit();
+            }
+            catch { /* ignore */ }
+            finally
+            {
+                Driver?.Dispose();
+                _driverInstance = null;
+            }
         }
     }
 }
