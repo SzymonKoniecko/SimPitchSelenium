@@ -82,6 +82,7 @@ public class PrepareSimulationTests : BaseTest
             "PKO BP Ekstraklasa",
             "Iterations:",
             "2022/2023", "2025/2026");
+        simulationItemPage.WaitForCompletedSimulation();
 
         AllSimulationsPage allSimulationsPage = simulationItemPage.NavBar.GoToAllSimulationsPage();
         allSimulationsPage.AssertSimulationDetails(0,
