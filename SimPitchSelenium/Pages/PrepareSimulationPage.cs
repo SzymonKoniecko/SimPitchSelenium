@@ -245,7 +245,7 @@ public class PrepareSimulationPage : BasePage
 
     internal void AssertConfidenceLevel(float expected)
     {
-        TextHelper.AssertTextEquals(GetElementText(By_ConfidenceLevel_Label).Replace('.', ','), expected.ToString(), "AssertConfidenceLevel");
+        TextHelper.AssertTextEquals(GetElementText(By_ConfidenceLevel_Label), expected.ToString(), "AssertConfidenceLevel");
     }
 
     internal void AssertNoiseFactor(float expected)
