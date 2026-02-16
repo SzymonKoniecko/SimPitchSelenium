@@ -21,6 +21,11 @@ public static class TextHelper
         }
     }
 
+    public static string ReplaceNumberToAssert(string value)
+    {
+        return value.Replace(",", "").Replace(".", "");
+    }
+
     public static void AssertTextContains(string actual, string expectedSubstring, string context = "")
     {
         try

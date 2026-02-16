@@ -245,17 +245,26 @@ public class PrepareSimulationPage : BasePage
 
     internal void AssertConfidenceLevel(float expected)
     {
-        TextHelper.AssertTextEquals(GetElementText(By_ConfidenceLevel_Label), expected.ToString(), "AssertConfidenceLevel");
+        TextHelper.AssertTextEquals(
+            TextHelper.ReplaceNumberToAssert(GetElementText(By_ConfidenceLevel_Label)),
+            TextHelper.ReplaceNumberToAssert(expected.ToString()),
+            "AssertConfidenceLevel");
     }
 
     internal void AssertNoiseFactor(float expected)
     {
-        TextHelper.AssertTextEquals(GetElementText(By_NoiseFactor_Label).Replace('.', ','), expected.ToString(), "AssertNoiseFactor");
+        TextHelper.AssertTextEquals(
+            TextHelper.ReplaceNumberToAssert(GetElementText(By_NoiseFactor_Label)),
+            TextHelper.ReplaceNumberToAssert(expected.ToString()),
+            "AssertNoiseFactor");
     }
 
     internal void AssertHomeAdvantage(float expected)
     {
-        TextHelper.AssertTextEquals(GetElementText(By_HomeAdvantage_Label).Replace('.', ','), expected.ToString(), "AssertHomeAdvantage");
+        TextHelper.AssertTextEquals(
+            TextHelper.ReplaceNumberToAssert(GetElementText(By_HomeAdvantage_Label)),
+            TextHelper.ReplaceNumberToAssert(expected.ToString()),
+            "AssertHomeAdvantage");
     }
 
     internal void AssertCreateScoreboardsCheckbox(bool isSelected)
@@ -312,7 +321,7 @@ public class PrepareSimulationPage : BasePage
         SelectLeague(model.League);
         SelectNumberOfIterations(model.NumberOfIterations);
 
-        
+
         if (model.LeagueRound != null)
             SelectLeagueRound(model.LeagueRound.Value);
         if (model.Model != null)
