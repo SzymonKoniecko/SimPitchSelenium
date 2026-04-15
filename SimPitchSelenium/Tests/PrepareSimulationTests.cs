@@ -19,6 +19,7 @@ public class PrepareSimulationTests : BaseTest
     }
 
     [Test]
+    [Category("Prepare")]
     public void PrepareSimulation_Should_Display_Validation_Errors()
     {
         _prepareSimulationPage.ClickStartSimulation();
