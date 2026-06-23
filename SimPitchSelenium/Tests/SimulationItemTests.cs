@@ -37,6 +37,7 @@ public class SimulationItemTests : BaseTest
         _simulationItemPage.AssertSimulationState("Running");
         _simulationItemPage.AssertIfIterationsPercentageIsNot100();
         _simulationItemPage.WaitForCompletedSimulation();
+        _simulationItemPage.AssertSimulationState("Completed");
     }
 
     [Test]
@@ -89,5 +90,43 @@ public class SimulationItemTests : BaseTest
         
         _simulationItemPage.AssertPercentSumEquals100(0, "Team row index 0");
         _simulationItemPage.AssertPercentSumEquals100(10, "Team row index 10");
+    }
+
+    [Test]
+    public void SimulationItem_Assert_Stop_Simulation()
+    {
+        _mainPage = new MainPage(Driver).Open();
+        var prepPage = _mainPage.GoToPrepareSimulationViaSectionButton();
+        prepPage.StartAnySimulation(200);
+        SimulationId = prepPage.GetSimulationId();
+        _simulationItemPage = prepPage.GoToSimulationItemPageViaUrl(SimulationId);
+        _simulationItemPage.AssertIfDisplayed(SimulationId);
+
+        _simulationItemPage.AssertSimulationState("Running");
+        _simulationItemPage.StopSimulation();
+        
+        System.Threading.Thread.Sleep(1000); // Give it a moment to stop
+        _simulationItemPage.RefreshPage();
+        
+        // Polling loop inside WaitForCompletedSimulation will wait if it's still running, but it should be Stopped
+        _simulationItemPage.WaitForCompletedSimulation();
+        _simulationItemPage.AssertSimulationState("Stopped");
+    }
+
+    [Test]
+    public void SimulationItem_Should_Navigate_To_IterationItem()
+    {
+        if (String.IsNullOrEmpty(SimulationId))
+            throw new Exception("Init not completed? Init() - SimulationItem_Should_Navigate_To_IterationItem");
+
+        _simulationItemPage = _mainPage.GoToSimulationItemPageViaUrl(SimulationId);
+        _simulationItemPage.AssertIfDisplayed(SimulationId);
+        _simulationItemPage.WaitForCompletedSimulation();
+
+        // Click on the first iteration
+        var iterationPage = _simulationItemPage.GoToIteration(0);
+        
+        // Assert that we navigated to the iteration page
+        iterationPage.AssertIfDisplayed();
     }
 }

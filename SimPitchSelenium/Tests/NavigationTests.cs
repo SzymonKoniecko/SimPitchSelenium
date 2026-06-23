@@ -40,6 +40,10 @@ public class NavigationTests : BaseTest
             _mainPage.NavBar.GetAboutBtnText(),
             "About"
         );
+        TextHelper.AssertTextEquals(
+            _mainPage.NavBar.GetAllMatchesBtnText(),
+            "Matches and results"
+        );
     }
 
     [Test]
@@ -55,6 +59,9 @@ public class NavigationTests : BaseTest
 
         var aboutPage = _mainPage.NavBar.GoToAboutPage();
         aboutPage.AssertIfDisplayed();
+
+        var leagueOverviewsPage = _mainPage.NavBar.GoToLeagueOverviewsPage();
+        leagueOverviewsPage.AssertIfDisplayed();
 
         var mainPage = _mainPage.NavBar.GoToMainPage();
         mainPage.AssertIfDisplayed();

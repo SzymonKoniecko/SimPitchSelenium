@@ -10,6 +10,7 @@ public class NavBarPage : BasePage
     protected By By_Nav_Prepare_Sim_Btn;
     protected By By_Nav_All_Sim_Btn;
     protected By By_Nav_About_Btn;
+    protected By By_Nav_All_Matches_Btn;
     public NavBarPage(IWebDriver webDriver) : base(driver: webDriver)
     {
         By_Logo = GetByClass("logo");
@@ -17,6 +18,7 @@ public class NavBarPage : BasePage
         By_Nav_Prepare_Sim_Btn = GetBySeleniumId("prepareSimulation-nav");
         By_Nav_All_Sim_Btn = GetBySeleniumId("simulations-nav");
         By_Nav_About_Btn = GetBySeleniumId("about-nav");
+        By_Nav_All_Matches_Btn = GetBySeleniumId("all-matches-nav");
     }
 
     internal MainPage GoToMainPage()
@@ -43,6 +45,12 @@ public class NavBarPage : BasePage
         return new AboutPage(Driver);
     }
 
+    internal LeagueOverviewsPage GoToLeagueOverviewsPage()
+    {
+        Click(By_Nav_All_Matches_Btn);
+        return new LeagueOverviewsPage(Driver);
+    }
+
     internal void AssertIfNavBarDisplayed()
     {
         IsElementDisplayed(By_Logo);
@@ -50,6 +58,7 @@ public class NavBarPage : BasePage
         IsElementDisplayed(By_Nav_Prepare_Sim_Btn);
         IsElementDisplayed(By_Nav_All_Sim_Btn);
         IsElementDisplayed(By_Nav_About_Btn);
+        IsElementDisplayed(By_Nav_All_Matches_Btn);
     }
 
     internal string GetLogoText()
@@ -75,5 +84,10 @@ public class NavBarPage : BasePage
     internal string GetAboutBtnText()
     {
         return GetElementText(By_Nav_About_Btn);
+    }
+
+    internal string GetAllMatchesBtnText()
+    {
+        return GetElementText(By_Nav_All_Matches_Btn);
     }
 }

@@ -18,6 +18,7 @@ public class SimulationItemPage : BasePage
     internal By By_Simulation_Iterations_Value;
     internal By By_Iteration;
     internal By By_HeatMap;
+    protected By By_StopSimulation_Btn = By.XPath("//button[contains(text(), 'Stop simulation')]");
     public SimulationItemPage(IWebDriver webDriver) : base(driver: webDriver)
     {
         By_Title = GetBySeleniumId("title-simulation-item");
@@ -39,6 +40,11 @@ public class SimulationItemPage : BasePage
         Click(GetBySeleniumId($"iteration-{index}"));
 
         return new IterationResultPage(Driver);
+    }
+
+    internal void StopSimulation()
+    {
+        Click(By_StopSimulation_Btn);
     }
 
     internal string GetCompletedIterationsString()

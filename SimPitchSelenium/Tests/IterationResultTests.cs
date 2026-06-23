@@ -35,4 +35,19 @@ public class IterationResultTests : BaseTest
         _iterationResultPage.AssertNumOfTeamsInTable(18 * 10 + 1);
         _iterationResultPage.AssertNumOfSimulatedMatches();
     }
+
+    [Test]
+    public void IterationResult_Assert_SimulatedMatchLabels()
+    {
+        if (String.IsNullOrEmpty(SimulationId))
+            throw new Exception("Init not completed? Init() - IterationResult_Assert_SimulatedMatchLabels");
+        
+        _iterationResultPage.AssertIfDisplayed();
+        
+        var simulatedMatchesCount = _iterationResultPage.GetNumberOfSimulatedMatches();
+        Utils.AssertHelper.IsTrue(simulatedMatchesCount > 0, "Simulated matches count should be greater than 0");
+        
+        // This will assert that the number of elements with selenium-id="simulated" matches the count
+        _iterationResultPage.AssertNumOfSimulatedMatches();
+    }
 }
