@@ -26,10 +26,10 @@ public class MainTests : BaseTest
     [Test]
     public void Main_Should_Display_Sections_Text()
     {
-        TextHelper.AssertTextContains(
-            _mainPage.GetSimPitchSectionText(),
-            "SimPitch\nAdvanced football match and league simulation based on Bayesian models.\nPrepare a new simulation"
-        );
+        var heroText = _mainPage.GetSimPitchSectionText();
+        TextHelper.AssertTextContains(heroText, "SimPitch");
+        TextHelper.AssertTextContains(heroText, "Advanced football match and league simulation based on Bayesian models.");
+        TextHelper.AssertTextContains(heroText, "Prepare a new simulation");
 
         AssertHelper.IsTrue(_mainPage.IsElementPresentAndEnabled(_mainPage.By_PrepareSimulation_Btn), "Prepare simulation button is not displayed!", TestContext.CurrentContext.Test.Name);
 

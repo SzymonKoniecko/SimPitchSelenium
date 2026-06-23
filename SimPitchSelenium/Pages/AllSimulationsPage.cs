@@ -54,6 +54,7 @@ public class AllSimulationsPage : BasePage
 
     internal void AssertSimulationCount(int expectedCount)
     {
+        Wait.Until(drv => drv.FindElements(By_SimulationClass).Count == expectedCount);
         AssertHelper.AreEqual(expectedCount, GetElementCount(By_SimulationClass));
     }
 }

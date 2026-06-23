@@ -93,7 +93,13 @@ public class PrepareSimulationTests : BaseTest
             $"Created: {TextHelper.GetFormattedCurrentDate()}",
             "Completed iterations: 2 / 2");
         allSimulationsPage.AssertClosedSimulationDetails(0,
-            "2\nSeed:\n1000\nGames to reach trust:\n15\nConfidence level:\n1.05\nNoise factor:\n0.12\nHome advantage:\n1.05\nSeason years used in simulation:");
+            "Iterations:", "2",
+            "Seed:", "1000",
+            "Games to reach trust:", "15",
+            "Confidence level:", "1.05",
+            "Noise factor:", "0.12",
+            "Home advantage:", "1.05",
+            "Season years used in simulation:");
     }
 
     [Test]

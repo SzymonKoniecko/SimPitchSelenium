@@ -344,8 +344,6 @@ public class PrepareSimulationPage : BasePage
             ClickStartSimulation();
 
             AssertStartedSimulationMessage();
-
-            Thread.Sleep(1000); // to give a time to complete the simulation
         }
     }
 

@@ -13,7 +13,9 @@ public class SimulationItemPage : BasePage
     internal By By_Simulation_Params_Details;
     internal By By_Simulation_Params_Details_List;
     internal By By_Simulation_State;
+    internal By By_Simulation_State_Value;
     internal By By_Simulation_Iterations;
+    internal By By_Simulation_Iterations_Value;
     internal By By_Iteration;
     internal By By_HeatMap;
     public SimulationItemPage(IWebDriver webDriver) : base(driver: webDriver)
@@ -22,7 +24,9 @@ public class SimulationItemPage : BasePage
         By_Simulation_Params_Details = GetBySeleniumId("sim-params-details");
         By_Simulation_Params_Details_List = GetBySeleniumId("sim-params-details-list");
         By_Simulation_State = GetBySeleniumId("state");
+        By_Simulation_State_Value = GetBySeleniumId("state-value");
         By_Simulation_Iterations = GetBySeleniumId("iterations");
+        By_Simulation_Iterations_Value = GetBySeleniumId("iterations-value");
         By_Iteration = GetByClass("scoreboard-block");
         By_HeatMap = GetBySeleniumId("heatmap-details");
 
@@ -39,26 +43,22 @@ public class SimulationItemPage : BasePage
 
     internal string GetCompletedIterationsString()
     {
-        return GetElementText(By_Simulation_Iterations).Split("\n")[1].Split("/")[1]
-                .ToString()
-                .Trim();
+        return GetElementText(By_Simulation_Iterations_Value).Trim();
     }
 
     internal string GetSimulationState()
     {
-        return GetElementText(By_Simulation_State).Split("\n")[1]
-                .ToString()
-                .Trim();;
+        return GetElementText(By_Simulation_State_Value).Trim();
     }
 
     internal void WaitForCompletedSimulation()
     {
         string state = GetSimulationState();
-        while (state.Contains("Running"))
+        while (state.Contains("Running") || state.Contains("Pending"))
         {
             Thread.Sleep(1000);
             RefreshPage();
-            WaitForElement(By_Simulation_State, 60);
+            WaitForElement(By_Simulation_State_Value, 60);
             state = GetSimulationState();
         }
     }
@@ -76,8 +76,7 @@ public class SimulationItemPage : BasePage
 
     internal void AssertIterationCount(int expectedCount)
     {
-        Thread.Sleep(200);
-        WaitForText("Check complete iteration details");
+        Wait.Until(drv => drv.FindElements(By_Iteration).Count == expectedCount);
         AssertHelper.AreEqual(expectedCount, GetElementCount(By_Iteration));
     }
 
@@ -105,6 +104,7 @@ public class SimulationItemPage : BasePage
         AssertPercentSumEquals100(GetAnyBySeleniumId($"cell-{rowNumber}-"), context);
     public void AssertPercentSumEquals100(By cellsLocator, string context = "")
     {
+        WaitForElement(By_HeatMap, 15);
         if (!IsElementWithTextDisplayed("Pos 1"))
             Click(By_HeatMap);
         try
