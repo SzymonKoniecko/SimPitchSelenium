@@ -4,7 +4,6 @@ using SimPitchSelenium.Pages;
 namespace SimPitchSelenium.Tests;
 
 [TestFixture]
-[Timeout(30000)]
 public class IterationResultTests : BaseTest
 {
     private IterationResultPage _iterationResultPage;

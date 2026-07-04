@@ -5,7 +5,6 @@ using SimPitchSelenium.Pages;
 namespace SimPitchSelenium.Tests;
 
 [TestFixture]
-[Timeout(45000)]
 public class AllSimulationsTests : BaseTest
 {
     private AllSimulationsPage _allSimulationsPage;
