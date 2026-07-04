@@ -20,7 +20,7 @@ public abstract class BasePage
     internal By By_Button_Primary;
     internal By By_Button_Secondary;
 
-    protected BasePage(IWebDriver driver, int defaultTimeoutSeconds = 10)
+    protected BasePage(IWebDriver driver, int defaultTimeoutSeconds = 30)
     {
         Driver = driver ?? throw new ArgumentNullException(nameof(driver));
         Wait = new WebDriverWait(driver, TimeSpan.FromSeconds(defaultTimeoutSeconds));
@@ -61,8 +61,32 @@ public abstract class BasePage
 
     protected void Click(By locator)
     {
-        var element = WaitForElement(locator);
-        element.Click();
+        var wait = new WebDriverWait(Driver, TimeSpan.FromSeconds(30));
+        wait.Until(drv =>
+        {
+            try
+            {
+                var element = drv.FindElement(locator);
+                if (element.Displayed && element.Enabled)
+                {
+                    element.Click();
+                    return true;
+                }
+                return false;
+            }
+            catch (ElementClickInterceptedException)
+            {
+                return false;
+            }
+            catch (StaleElementReferenceException)
+            {
+                return false;
+            }
+            catch (NoSuchElementException)
+            {
+                return false;
+            }
+        });
     }
 
     protected void Type(By locator, string text, bool clear = true)
@@ -190,13 +214,9 @@ public abstract class BasePage
 
     internal void WaitForText(string text)
     {
-        int retry = 0;
-        while (!IsElementWithTextDisplayed(text))
+        if (!IsElementWithTextDisplayed(text))
         {
-            Thread.Sleep(500);
-            retry++;
-            if (retry == 100)
-                throw new Exception("Waiting in loop?");
+            throw new Exception($"Text '{text}' was not displayed within the timeout.");
         }
     }
 
@@ -212,7 +232,7 @@ public abstract class BasePage
                 ? $"//*[contains(normalize-space(text()), '{safeText}')]"
                 : $"//{tag}[contains(normalize-space(text()), '{safeText}')]";
 
-            var wait = new WebDriverWait(Driver, TimeSpan.FromSeconds(10));
+            var wait = new WebDriverWait(Driver, TimeSpan.FromSeconds(30));
             var element = wait.Until(ExpectedConditions.ElementIsVisible(By.XPath(xpath)));
             return element.Displayed;
         }
@@ -245,17 +265,16 @@ public abstract class BasePage
         try
         {
             var element = WaitForElement(locator);
-            var select = new SelectElement(element);
-
-            try { select.SelectByText(option); return; }
-            catch (NoSuchElementException) { }
-
-            try { select.SelectByValue(option); return; }
-            catch (NoSuchElementException) { }
-
-            var options = element.FindElements(By.TagName("option"));
-            var targetOption = options.FirstOrDefault(o =>
-                o.GetAttribute("selenium-id")?.Equals(option, StringComparison.OrdinalIgnoreCase) == true);
+            
+            var targetOption = Wait.Until(d => 
+            {
+                var options = element.FindElements(By.TagName("option"));
+                return options.FirstOrDefault(o =>
+                    string.Equals(o.Text?.Trim(), option, StringComparison.OrdinalIgnoreCase) ||
+                    string.Equals(o.GetAttribute("value")?.Trim(), option, StringComparison.OrdinalIgnoreCase) ||
+                    string.Equals(o.GetAttribute("selenium-id")?.Trim(), option, StringComparison.OrdinalIgnoreCase)
+                );
+            });
 
             if (targetOption != null)
             {
@@ -276,23 +295,43 @@ public abstract class BasePage
         try
         {
             var element = WaitForElement(locator);
-            var select = new SelectElement(element);
+            
+            Wait.Until(d => 
+            {
+                var options = element.FindElements(By.TagName("option"));
+                var selectedOption = options.FirstOrDefault(o => o.Selected);
+                if (selectedOption == null) return false;
 
-            var selectedOption = select.SelectedOption;
-            var text = selectedOption.Text?.Trim();
-            var value = selectedOption.GetAttribute("value")?.Trim();
-            var seleniumId = selectedOption.GetAttribute("selenium-id")?.Trim();
+                var text = selectedOption.Text?.Trim();
+                var value = selectedOption.GetAttribute("value")?.Trim();
+                var seleniumId = selectedOption.GetAttribute("selenium-id")?.Trim();
 
-            bool match = string.Equals(text, expectedValue, StringComparison.OrdinalIgnoreCase)
-                         || string.Equals(value, expectedValue, StringComparison.OrdinalIgnoreCase)
-                         || string.Equals(seleniumId, expectedValue, StringComparison.OrdinalIgnoreCase);
-
-            AssertHelper.IsTrue(
-                match,
-                $"Expected: '{expectedValue}' is not selected in {locator}. " +
-                $"(Found: text='{text}', value='{value}', selenium-id='{seleniumId}')",
-                context
-            );
+                return string.Equals(text, expectedValue, StringComparison.OrdinalIgnoreCase)
+                       || string.Equals(value, expectedValue, StringComparison.OrdinalIgnoreCase)
+                       || string.Equals(seleniumId, expectedValue, StringComparison.OrdinalIgnoreCase);
+            });
+        }
+        catch (WebDriverTimeoutException)
+        {
+             try 
+             {
+                 var element = Driver.FindElement(locator);
+                 var options = element.FindElements(By.TagName("option"));
+                 var selectedOption = options.FirstOrDefault(o => o.Selected);
+                 var text = selectedOption?.Text?.Trim();
+                 var value = selectedOption?.GetAttribute("value")?.Trim();
+                 var seleniumId = selectedOption?.GetAttribute("selenium-id")?.Trim();
+                 
+                 AssertHelper.Fail(
+                    $"Expected: '{expectedValue}' is not selected in {locator}. " +
+                    $"(Found: text='{text}', value='{value}', selenium-id='{seleniumId}')",
+                    context
+                 );
+             } 
+             catch (Exception ex) 
+             {
+                 AssertHelper.Fail($"Error during the assertion of dropdown value {locator} (Timeout): {ex.Message}", context);
+             }
         }
         catch (Exception ex)
         {

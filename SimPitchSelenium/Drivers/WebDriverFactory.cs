@@ -34,12 +34,16 @@ public static class WebDriverFactory
         // Auto => Remote jeśli remoteUrl ustawione, inaczej Local
         var resolvedMode = ResolveMode(mode, remoteUrl);
 
-        return resolvedMode switch
+        IWebDriver driver = resolvedMode switch
         {
             "local" => new ChromeDriver(options),
             "remote" => new RemoteWebDriver(new Uri(NormalizeRemoteUrl(remoteUrl)), options),
             _ => throw new ArgumentException($"Invalid driverMode: {mode}")
         };
+
+        driver.Manage().Timeouts().ImplicitWait = TimeSpan.FromSeconds(30);
+
+        return driver;
     }
 
     private static string ResolveMode(string mode, string remoteUrl)

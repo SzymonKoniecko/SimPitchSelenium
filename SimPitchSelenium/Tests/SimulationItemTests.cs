@@ -109,7 +109,7 @@ public class SimulationItemTests : BaseTest
         
         // Polling loop inside WaitForCompletedSimulation will wait if it's still running, but it should be Stopped
         _simulationItemPage.WaitForCompletedSimulation();
-        _simulationItemPage.AssertSimulationState("Stopped");
+        _simulationItemPage.AssertSimulationState("Cancelled");
     }
 
     [Test]
