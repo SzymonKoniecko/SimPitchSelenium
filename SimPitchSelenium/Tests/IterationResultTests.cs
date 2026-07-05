@@ -20,6 +20,7 @@ public class IterationResultTests : BaseTest
         SimulationId = prepPage.GetSimulationId();
         var simulationItemPage = prepPage.GoToSimulationItemPageViaUrl(SimulationId);
         simulationItemPage.AssertIfDisplayed(SimulationId);
+        simulationItemPage.WaitForCompletedSimulation();
         _iterationResultPage = simulationItemPage.GoToIteration(rand.Next(0,2));
         // go to first noticed iterationResult
     }

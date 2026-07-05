@@ -31,7 +31,7 @@ public class LeagueOverviewsTests : BaseTest
         _leagueOverviewsPage.SelectLeague("pko-bp-ekstraklasa");
         
         // Now it should display rounds or "Loading rounds..."
-        _leagueOverviewsPage.WaitForText("Started simulation by");
+        _leagueOverviewsPage.WaitForText("Scoreboard");
     }
 
     [Test]

@@ -119,11 +119,11 @@ public abstract class BasePage
         return elements.Count;
     }
 
-    protected bool IsElementDisplayed(By locator)
+    protected bool IsElementDisplayed(By locator, int? timeoutSeconds = 10)
     {
         try
         {
-            return WaitForElement(locator).Displayed;
+            return WaitForElement(locator, timeoutSeconds).Displayed;
         }
         catch
         {
