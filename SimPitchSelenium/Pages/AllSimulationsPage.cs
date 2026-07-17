@@ -40,6 +40,26 @@ public class AllSimulationsPage : BasePage
         }
     }
 
+    internal int GetSimulationIndexByTitle(string title)
+    {
+        for (int i = 0; i < 15; i++)
+        {
+            try
+            {
+                var text = GetElementText(By_Simulation_Details(i));
+                if (text.Contains(title))
+                {
+                    return i;
+                }
+            }
+            catch
+            {
+                // element might not exist or be out of range
+            }
+        }
+        throw new Exception($"Simulation with title '{title}' not found on the page.");
+    }
+
     internal void AssertClosedSimulationDetails(int index, params string[] expectedString)
     {
 

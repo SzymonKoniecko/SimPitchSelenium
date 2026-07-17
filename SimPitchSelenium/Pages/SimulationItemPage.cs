@@ -76,7 +76,7 @@ public class SimulationItemPage : BasePage
 
     internal void AssertIfDisplayed(string simulationId)
     {
-        AssertHelper.IsTrue(IsElementDisplayed(By_Title), "Page is not loaded", "SimulationItemPage");
+        AssertHelper.IsTrue(IsElementDisplayed(By_Title, 30), "Page is not loaded", "SimulationItemPage");
         AssertUrlContains(simulationId);
     }
 

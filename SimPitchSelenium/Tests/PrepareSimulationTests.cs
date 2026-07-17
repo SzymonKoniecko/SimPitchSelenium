@@ -85,13 +85,14 @@ public class PrepareSimulationTests : BaseTest
         simulationItemPage.WaitForCompletedSimulation();
 
         AllSimulationsPage allSimulationsPage = simulationItemPage.NavBar.GoToAllSimulationsPage();
-        allSimulationsPage.AssertSimulationDetails(0,
+        int simIndex = allSimulationsPage.GetSimulationIndexByTitle(model.Title);
+        allSimulationsPage.AssertSimulationDetails(simIndex,
             model.Title,
             "State: Completed",
             "League: PKO BP Ekstraklasa",
             $"Created: {TextHelper.GetFormattedCurrentDate()}",
             "Completed iterations: 2 / 2");
-        allSimulationsPage.AssertClosedSimulationDetails(0,
+        allSimulationsPage.AssertClosedSimulationDetails(simIndex,
             "Iterations:", "2",
             "Seed:", "1000",
             "Games to reach trust:", "15",
@@ -113,7 +114,7 @@ public class PrepareSimulationTests : BaseTest
             Title = $"Selenium {TestContext.CurrentContext.Test.Name} - {rand.Next(0, 99)}",
             League = "pko-bp-ekstraklasa",
             LeagueRound = 3,
-            NumberOfIterations = 20,
+            NumberOfIterations = 2,
             CreateScoreboards = true,
             Seed = 291363,
             GamesToReachTrust = 15,

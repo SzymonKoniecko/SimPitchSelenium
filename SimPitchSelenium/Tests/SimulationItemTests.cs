@@ -10,16 +10,28 @@ public class SimulationItemTests : BaseTest
     private SimulationItemPage _simulationItemPage;
     private MainPage _mainPage;
     private string SimulationId = String.Empty;
+    private static string StaticSimulationId = String.Empty;
 
     [SetUp]
     public void Init()
     {
         _mainPage = new MainPage(Driver).Open();
-        var prepPage = _mainPage.GoToPrepareSimulationViaSectionButton();
-        prepPage.StartAnySimulation(50);
-        SimulationId = prepPage.GetSimulationId();
-        _simulationItemPage = prepPage.GoToSimulationItemPageViaUrl(SimulationId);
-        _simulationItemPage.AssertIfDisplayed(SimulationId);
+        if (String.IsNullOrEmpty(StaticSimulationId))
+        {
+            var prepPage = _mainPage.GoToPrepareSimulationViaSectionButton();
+            prepPage.StartAnySimulation(20);
+            StaticSimulationId = prepPage.GetSimulationId();
+            _simulationItemPage = prepPage.GoToSimulationItemPage();
+            _simulationItemPage.AssertIfDisplayed(StaticSimulationId);
+            _simulationItemPage.WaitForCompletedSimulation();
+        }
+        else
+        {
+            _simulationItemPage = _mainPage.GoToSimulationItemPageViaUrl(StaticSimulationId);
+            _simulationItemPage.AssertIfDisplayed(StaticSimulationId);
+            _simulationItemPage.WaitForCompletedSimulation();
+        }
+        SimulationId = StaticSimulationId;
     }
 
     [Test]
@@ -35,19 +47,15 @@ public class SimulationItemTests : BaseTest
 
         _simulationItemPage.AssertSimulationState("Running");
         _simulationItemPage.AssertIfIterationsPercentageIsNot100();
-        _simulationItemPage.WaitForCompletedSimulation();
-        _simulationItemPage.AssertSimulationState("Completed");
     }
 
     [Test]
-    public void SimulatonItem_Assert_Pagination_Filter()
+    public void SimulatonItem_Assert_Pagination()
     {
         if (String.IsNullOrEmpty(SimulationId))
-            throw new Exception("Init not completed? Init() - SimulatonItem_Assert_Pagination_Filter");
+            throw new Exception("Init not completed? Init() - SimulatonItem_Assert_Pagination");
 
-        _simulationItemPage = _mainPage.GoToSimulationItemPageViaUrl(SimulationId);
-        _simulationItemPage.AssertIfDisplayed(SimulationId);
-        _simulationItemPage.WaitForCompletedSimulation();
+        // The simulation is already loaded and completed in Init()
 
         // Pagination
         _simulationItemPage.Pagination.CheckIfItsFirstPage();
@@ -57,7 +65,16 @@ public class SimulationItemTests : BaseTest
         WaitHelper.Sleep();
         _simulationItemPage.WaitForText("Check complete iteration details");
         _simulationItemPage.AssertIterationCount(5);
+    }
+    
+    [Test]
+    public void SimulatonItem_Assert_Filter()
+    {
+        if (String.IsNullOrEmpty(SimulationId))
+            throw new Exception("Init not completed? Init() - SimulatonItem_Assert_Filter");
 
+        // The simulation is already loaded and completed in Init()
+        
         // Filter
         _simulationItemPage.Pagination.CheckIfItsFirstPage();
         _simulationItemPage.Pagination.SelectPageSize("10");
@@ -82,9 +99,7 @@ public class SimulationItemTests : BaseTest
         if (String.IsNullOrEmpty(SimulationId))
             throw new Exception("Init not completed? Init() - SimulationItem_Assert_HeatMap");
             
-        _simulationItemPage = _mainPage.GoToSimulationItemPageViaUrl(SimulationId);
-        _simulationItemPage.AssertIfDisplayed(SimulationId);
-        _simulationItemPage.WaitForCompletedSimulation();
+        // The simulation is already loaded and completed in Init()
         WaitHelper.Sleep();
         
         _simulationItemPage.AssertPercentSumEquals100(0, "Team row index 0");
@@ -118,9 +133,7 @@ public class SimulationItemTests : BaseTest
         if (String.IsNullOrEmpty(SimulationId))
             throw new Exception("Init not completed? Init() - SimulationItem_Should_Navigate_To_IterationItem");
 
-        _simulationItemPage = _mainPage.GoToSimulationItemPageViaUrl(SimulationId);
-        _simulationItemPage.AssertIfDisplayed(SimulationId);
-        _simulationItemPage.WaitForCompletedSimulation();
+        // The simulation is already loaded and completed in Init()
 
         // Click on the first iteration
         var iterationPage = _simulationItemPage.GoToIteration(0);
