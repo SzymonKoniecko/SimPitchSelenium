@@ -107,6 +107,7 @@ public class SimulationItemTests : BaseTest
     }
 
     [Test]
+    [Obsolete("10/10 flaky test")]
     public void SimulationItem_Assert_Stop_Simulation()
     {
         _mainPage = new MainPage(Driver).Open();
