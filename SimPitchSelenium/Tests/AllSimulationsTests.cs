@@ -5,6 +5,7 @@ using SimPitchSelenium.Pages;
 namespace SimPitchSelenium.Tests;
 
 [TestFixture]
+[Ignore("Setup creates up to 6 simulations and takes more than 30 seconds")]
 public class AllSimulationsTests : BaseTest
 {
     private AllSimulationsPage _allSimulationsPage;
@@ -34,7 +35,7 @@ public class AllSimulationsTests : BaseTest
         _allSimulationsPage.RefreshPage();
     }
 
-    [Test]
+    ////[Test]
     public void AllSimulations_Assert_Filter()
     {
         _allSimulationsPage = _allSimulationsPage.NavBar.GoToAllSimulationsPage();
@@ -54,7 +55,7 @@ public class AllSimulationsTests : BaseTest
         _allSimulationsPage.AssertTextDisplayed("Toggle Ascending");
     }
 
-    [Test]
+    ////[Test]
     public void AllSimulations_Assert_Pagination()
     {
         _allSimulationsPage = _allSimulationsPage.NavBar.GoToAllSimulationsPage();

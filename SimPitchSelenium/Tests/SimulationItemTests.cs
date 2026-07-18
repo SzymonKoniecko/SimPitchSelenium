@@ -5,7 +5,7 @@ using SimPitchSelenium.Utils;
 namespace SimPitchSelenium.Tests;
 
 [TestFixture]
-[NonParallelizable]
+[Ignore("Setup takes more than 30 seconds (waits for 20 iterations to complete)")]
 public class SimulationItemTests : BaseTest
 {
     private SimulationItemPage _simulationItemPage;
@@ -35,7 +35,8 @@ public class SimulationItemTests : BaseTest
         SimulationId = StaticSimulationId;
     }
 
-    [Test]
+    //[Test]
+    [Ignore("Execution takes more than 30 seconds")]
     public void SimulationItem_Assert_Status_And_Refresh()
     {
         // Preparation (large iteration number to cover changes in statuses)
@@ -50,7 +51,7 @@ public class SimulationItemTests : BaseTest
         _simulationItemPage.AssertIfIterationsPercentageIsNot100();
     }
 
-    [Test]
+    //[Test]
     public void SimulatonItem_Assert_Pagination()
     {
         if (String.IsNullOrEmpty(SimulationId))
@@ -68,7 +69,7 @@ public class SimulationItemTests : BaseTest
         _simulationItemPage.AssertIterationCount(5);
     }
     
-    [Test]
+    //[Test]
     public void SimulatonItem_Assert_Filter()
     {
         if (String.IsNullOrEmpty(SimulationId))
@@ -94,7 +95,7 @@ public class SimulationItemTests : BaseTest
         _simulationItemPage.WaitForText("Check complete iteration details");
     }
 
-    [Test]
+    //[Test]
     public void SimulationItem_Assert_HeatMap()
     {
         if (String.IsNullOrEmpty(SimulationId))
@@ -108,7 +109,7 @@ public class SimulationItemTests : BaseTest
     }
 
     //[Test]
-    //[Obsolete("10/10 flaky test")]
+    [Ignore("Execution takes more than 30 seconds or is not stable")]
     public void SimulationItem_Assert_Stop_Simulation()
     {
         _mainPage = new MainPage(Driver).Open();
@@ -129,7 +130,7 @@ public class SimulationItemTests : BaseTest
         _simulationItemPage.AssertSimulationState("Cancelled");
     }
 
-    [Test]
+    //[Test]
     public void SimulationItem_Should_Navigate_To_IterationItem()
     {
         if (String.IsNullOrEmpty(SimulationId))

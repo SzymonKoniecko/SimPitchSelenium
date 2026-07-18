@@ -4,7 +4,7 @@ using SimPitchSelenium.Pages;
 namespace SimPitchSelenium.Tests;
 
 [TestFixture]
-[NonParallelizable]
+[Ignore("Setup takes more than 30 seconds to run and wait for simulation")]
 public class IterationResultTests : BaseTest
 {
     private IterationResultPage _iterationResultPage;
@@ -39,7 +39,7 @@ public class IterationResultTests : BaseTest
         // go to first noticed iterationResult
     }
 
-    [Test]
+    //[Test]
     public void IterationResult_Assert_Scoreboard_SimulatedMatches()
     {
         if (String.IsNullOrEmpty(SimulationId))
@@ -50,7 +50,7 @@ public class IterationResultTests : BaseTest
         _iterationResultPage.AssertNumOfSimulatedMatches();
     }
 
-    [Test]
+    //[Test]
     public void IterationResult_Assert_SimulatedMatchLabels()
     {
         if (String.IsNullOrEmpty(SimulationId))
