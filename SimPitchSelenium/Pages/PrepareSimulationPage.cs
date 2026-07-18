@@ -186,6 +186,7 @@ public class PrepareSimulationPage : BasePage
 
     internal SimulationItemPage GoToSimulationItemPage()
     {
+        SimPitchSelenium.Utils.WaitHelper.Sleep();
         Click(By_CreatedSimulation_Button);
         return new SimulationItemPage(Driver);
     }
