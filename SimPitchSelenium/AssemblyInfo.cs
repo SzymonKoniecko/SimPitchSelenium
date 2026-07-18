@@ -2,6 +2,7 @@ using NUnit.Framework;
 
 // Run tests in parallel across different test fixtures (classes)
 [assembly: Parallelizable(ParallelScope.All)]
+[assembly: FixtureLifeCycle(LifeCycle.InstancePerTestCase)]
 
 // Set the number of parallel workers (threads). 
 // 4 is a safe default for Selenium to avoid overloading the local machine.

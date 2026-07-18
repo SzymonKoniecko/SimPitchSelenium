@@ -9,8 +9,8 @@ namespace SimPitchSelenium.Tests.API
     {
         protected HttpClient Client;
 
-        [OneTimeSetUp]
-        public void OneTimeSetUp()
+        [SetUp]
+        public void SetUp()
         {
             Client = new HttpClient
             {
@@ -18,8 +18,8 @@ namespace SimPitchSelenium.Tests.API
             };
         }
 
-        [OneTimeTearDown]
-        public void OneTimeTearDown()
+        [TearDown]
+        public void TearDown()
         {
             Client?.Dispose();
         }

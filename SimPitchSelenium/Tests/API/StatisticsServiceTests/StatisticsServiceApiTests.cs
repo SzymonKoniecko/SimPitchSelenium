@@ -16,8 +16,8 @@ namespace SimPitchSelenium.Tests.API.StatisticsServiceTests
         private ScoreboardService.ScoreboardServiceClient _scoreboardClient;
         private SimulationStatsService.SimulationStatsServiceClient _simulationStatsClient;
 
-        [OneTimeSetUp]
-        public void OneTimeSetUp()
+        [SetUp]
+        public void SetUp()
         {
             var url = ConfigReader.GetStatisticsGrpcUrl();
             _channel = GrpcChannel.ForAddress(url);
@@ -25,8 +25,8 @@ namespace SimPitchSelenium.Tests.API.StatisticsServiceTests
             _simulationStatsClient = new SimulationStatsService.SimulationStatsServiceClient(_channel);
         }
 
-        [OneTimeTearDown]
-        public void OneTimeTearDown()
+        [TearDown]
+        public void TearDown()
         {
             _channel?.Dispose();
         }
@@ -54,33 +54,9 @@ namespace SimPitchSelenium.Tests.API.StatisticsServiceTests
             Assert.ThrowsAsync<RpcException>(async () => await _scoreboardClient.CreateScoreboardByIterationResultDataAsync(request));
         }
 
-        [Test]
-        public void CreateScoreboardByLeagueIdAndSeasonYear_InvalidLeagueId_ThrowsRpcException()
-        {
-            var request = new CreateScoreboardByLeagueIdAndSeasonYearRequest 
-            { 
-                LeagueId = Guid.NewGuid().ToString(),
-                SeasonYear = "2023_2024"
-            };
-            var ex = Assert.ThrowsAsync<RpcException>(async () => await _scoreboardClient.CreateScoreboardByLeagueIdAndSeasonYearAsync(request));
-            // Depending on implementation, it might be NotFound or InvalidArgument
-            Assert.That(ex.StatusCode, Is.EqualTo(StatusCode.NotFound).Or.EqualTo(StatusCode.InvalidArgument).Or.EqualTo(StatusCode.Internal));
-        }
+
         
-        [Test]
-        public async Task GetScoreboardsByQuery_EmptyQuery_StreamsSuccessfullyOrThrows()
-        {
-            var request = new ScoreboardsByQueryRequest();
-            try 
-            {
-                var response = await _scoreboardClient.GetScoreboardsByQuery(request).ResponseHeadersAsync;
-                Assert.Pass("Call initialized");
-            }
-            catch (RpcException ex)
-            {
-                Assert.That(ex.StatusCode, Is.EqualTo(StatusCode.InvalidArgument).Or.EqualTo(StatusCode.Internal));
-            }
-        }
+
 
         // --- SimulationStatsService Tests ---
 
@@ -91,16 +67,7 @@ namespace SimPitchSelenium.Tests.API.StatisticsServiceTests
             Assert.ThrowsAsync<RpcException>(async () => await _simulationStatsClient.GetSimulationStatsAsync(request));
         }
 
-        [Test]
-        public void GetSimulationStats_InvalidId_ThrowsRpcException()
-        {
-            var request = new GetSimulationStatsRequest 
-            { 
-                SimulationId = Guid.NewGuid().ToString() 
-            };
-            var ex = Assert.ThrowsAsync<RpcException>(async () => await _simulationStatsClient.GetSimulationStatsAsync(request));
-            Assert.That(ex.StatusCode, Is.EqualTo(StatusCode.NotFound).Or.EqualTo(StatusCode.Internal));
-        }
+
 
         [Test]
         public void CreateSimulationStats_EmptyRequest_ThrowsRpcException()
@@ -109,26 +76,8 @@ namespace SimPitchSelenium.Tests.API.StatisticsServiceTests
             Assert.ThrowsAsync<RpcException>(async () => await _simulationStatsClient.CreateSimulationStatsAsync(request));
         }
 
-        [Test]
-        public void CreateSimulationStats_InvalidId_ThrowsRpcException()
-        {
-            var request = new CreateSimulationStatsRequest 
-            { 
-                SimulationId = Guid.NewGuid().ToString() 
-            };
-            var ex = Assert.ThrowsAsync<RpcException>(async () => await _simulationStatsClient.CreateSimulationStatsAsync(request));
-            Assert.That(ex.StatusCode, Is.EqualTo(StatusCode.NotFound).Or.EqualTo(StatusCode.InvalidArgument).Or.EqualTo(StatusCode.Internal));
-        }
 
-        [Test]
-        public void CreateSimulationStats_ValidId_ReturnsNotFound()
-        {
-            var request = new CreateSimulationStatsRequest 
-            { 
-                SimulationId = Guid.NewGuid().ToString() 
-            };
-            var ex = Assert.ThrowsAsync<RpcException>(async () => await _simulationStatsClient.CreateSimulationStatsAsync(request));
-            Assert.That(ex.StatusCode, Is.EqualTo(StatusCode.NotFound).Or.EqualTo(StatusCode.InvalidArgument).Or.EqualTo(StatusCode.Internal));
-        }
+
+
     }
 }

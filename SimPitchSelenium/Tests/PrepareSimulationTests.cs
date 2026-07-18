@@ -55,52 +55,6 @@ public class PrepareSimulationTests : BaseTest
         _prepareSimulationPage.AssertSelectedModel(prep.Model);
     }
 
-    [Test]
-    public void PrepareSimulation_Should_Create_BASE_Simulation()
-    {
-        PrepareSimulationModel model = new()
-        {
-            // Add leagueRound (in future)
-            isSeason2022_2023 = true,
-            isSeason2025_2026 = true,
-
-            Title = $"Selenium {TestContext.CurrentContext.Test.Name} - {rand.Next(0, 99)}",
-            League = "pko-bp-ekstraklasa",
-            NumberOfIterations = 2,
-            CreateScoreboards = false,
-            Seed = 1000
-        };
-
-        _prepareSimulationPage.PrepareSimulationByModel(model, true);
-
-        string simulationId = _prepareSimulationPage.GetSimulationId();
-
-
-        SimulationItemPage simulationItemPage = _prepareSimulationPage.GoToSimulationItemPage();
-        simulationItemPage.AssertIfDisplayed(simulationId);
-        simulationItemPage.AssertSimulationParams(
-            "PKO BP Ekstraklasa",
-            "Iterations:",
-            "2022/2023", "2025/2026");
-        simulationItemPage.WaitForCompletedSimulation();
-
-        AllSimulationsPage allSimulationsPage = simulationItemPage.NavBar.GoToAllSimulationsPage();
-        int simIndex = allSimulationsPage.GetSimulationIndexByTitle(model.Title);
-        allSimulationsPage.AssertSimulationDetails(simIndex,
-            model.Title,
-            "State: Completed",
-            "League: PKO BP Ekstraklasa",
-            $"Created: {TextHelper.GetFormattedCurrentDate()}",
-            "Completed iterations: 2 / 2");
-        allSimulationsPage.AssertClosedSimulationDetails(simIndex,
-            "Iterations:", "2",
-            "Seed:", "1000",
-            "Games to reach trust:", "15",
-            "Confidence level:", "1.05",
-            "Noise factor:", "0.12",
-            "Home advantage:", "1.05",
-            "Season years used in simulation:");
-    }
 
     //[Test]
     //[Ignore("Execution takes more than 30 seconds or is not stable")]

@@ -5,7 +5,6 @@ using SimPitchSelenium.Utils;
 namespace SimPitchSelenium.Tests;
 
 [TestFixture]
-[Ignore("Setup takes more than 30 seconds (waits for 20 iterations to complete)")]
 public class SimulationItemTests : BaseTest
 {
     private SimulationItemPage _simulationItemPage;
@@ -17,6 +16,20 @@ public class SimulationItemTests : BaseTest
     public void Init()
     {
         _mainPage = new MainPage(Driver).Open();
+    }
+
+    [Test]
+    public void SimulationItem_Simple_Creation_Test()
+    {
+        var prepPage = _mainPage.GoToPrepareSimulationViaSectionButton();
+        prepPage.StartAnySimulation(1); // just 1 iteration so it's fast
+        SimulationId = prepPage.GetSimulationId();
+        _simulationItemPage = prepPage.GoToSimulationItemPage();
+        _simulationItemPage.AssertIfDisplayed(SimulationId);
+    }
+
+    private void EnsureSimulationExists()
+    {
         if (String.IsNullOrEmpty(StaticSimulationId))
         {
             var prepPage = _mainPage.GoToPrepareSimulationViaSectionButton();

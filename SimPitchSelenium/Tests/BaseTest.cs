@@ -21,6 +21,7 @@ public abstract class BaseTest
     {
         Driver = WebDriverFactory.CreateDriver();
         _driverInstance = Driver;
+        BaseUrl = ConfigReader.GetBaseUrl();
     }
 
     [TearDown]
