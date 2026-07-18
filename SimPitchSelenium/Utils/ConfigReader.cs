@@ -8,6 +8,8 @@ public static class ConfigReader
         Path.Combine(Directory.GetCurrentDirectory(), "appsettings.json");
 
     public static string GetBaseUrl() => Get("baseUrl");
+    public static string GetApiBaseUrl() => Get("apiBaseUrl");
+    public static string GetStatisticsGrpcUrl() => Get("statisticsGrpcUrl");
     public static string GetBrowser() => Get("browser");
     public static bool GetHeadless() => bool.Parse(Get("headless"));
 

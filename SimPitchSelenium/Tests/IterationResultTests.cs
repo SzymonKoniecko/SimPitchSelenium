@@ -4,24 +4,38 @@ using SimPitchSelenium.Pages;
 namespace SimPitchSelenium.Tests;
 
 [TestFixture]
+[NonParallelizable]
 public class IterationResultTests : BaseTest
 {
     private IterationResultPage _iterationResultPage;
     private MainPage _mainPage;
     private string SimulationId;
+    private static string StaticSimulationId = String.Empty;
     private Random rand;
+
     [SetUp]
     public void Init()
     {
         rand = new();
         _mainPage = new MainPage(Driver).Open();
-        var prepPage = _mainPage.GoToPrepareSimulationViaSectionButton();
-        prepPage.StartAnySimulation(2);
-        SimulationId = prepPage.GetSimulationId();
-        var simulationItemPage = prepPage.GoToSimulationItemPageViaUrl(SimulationId);
-        simulationItemPage.AssertIfDisplayed(SimulationId);
-        simulationItemPage.WaitForCompletedSimulation();
-        _iterationResultPage = simulationItemPage.GoToIteration(rand.Next(0,2));
+        if (String.IsNullOrEmpty(StaticSimulationId))
+        {
+            var prepPage = _mainPage.GoToPrepareSimulationViaSectionButton();
+            prepPage.StartAnySimulation(2);
+            StaticSimulationId = prepPage.GetSimulationId();
+            var simulationItemPage = prepPage.GoToSimulationItemPage();
+            simulationItemPage.AssertIfDisplayed(StaticSimulationId);
+            simulationItemPage.WaitForCompletedSimulation();
+            _iterationResultPage = simulationItemPage.GoToIteration(rand.Next(0,2));
+        }
+        else
+        {
+            var simulationItemPage = _mainPage.GoToSimulationItemPageViaUrl(StaticSimulationId);
+            simulationItemPage.AssertIfDisplayed(StaticSimulationId);
+            simulationItemPage.WaitForCompletedSimulation();
+            _iterationResultPage = simulationItemPage.GoToIteration(rand.Next(0,2));
+        }
+        SimulationId = StaticSimulationId;
         // go to first noticed iterationResult
     }
 

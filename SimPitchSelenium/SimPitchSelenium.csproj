@@ -19,6 +19,12 @@
     <PackageReference Include="coverlet.collector" Version="6.0.2" />
     <PackageReference Include="DotNetSeleniumExtras.WaitHelpers" Version="3.11.0" />
     <PackageReference Include="ExtentReports" Version="5.0.4" />
+    <PackageReference Include="Google.Protobuf" Version="3.35.1" />
+    <PackageReference Include="Grpc.Net.Client" Version="2.80.0" />
+    <PackageReference Include="Grpc.Tools" Version="2.82.0">
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+      <PrivateAssets>all</PrivateAssets>
+    </PackageReference>
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="18.0.0" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.4" />
     <PackageReference Include="NUnit" Version="4.4.0" />
@@ -29,6 +35,12 @@
     <PackageReference Include="Selenium.WebDriver.ChromeDriver" Version="142.0.7444.6100" />
     <PackageReference Include="TeamCity.VSTest.TestAdapter" Version="1.0.41" />
     <PackageReference Include="WebDriverManager" Version="2.17.6" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Protobuf Include="..\..\Services\StatisticsService\src\SimPitchProtos\StatisticsService\Scoreboard\*.proto" GrpcServices="Client" ProtoRoot="..\..\Services\StatisticsService\src\SimPitchProtos\StatisticsService" />
+    <Protobuf Include="..\..\Services\StatisticsService\src\SimPitchProtos\StatisticsService\SimulationStats\*.proto" GrpcServices="Client" ProtoRoot="..\..\Services\StatisticsService\src\SimPitchProtos\StatisticsService" />
+    <Protobuf Include="..\..\Services\StatisticsService\src\SimPitchProtos\StatisticsService\commonTypes.proto" GrpcServices="None" ProtoRoot="..\..\Services\StatisticsService\src\SimPitchProtos\StatisticsService" />
   </ItemGroup>
 
   <ItemGroup>

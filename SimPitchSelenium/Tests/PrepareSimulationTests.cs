@@ -6,6 +6,7 @@ using SimPitchSelenium.Utils;
 namespace SimPitchSelenium.Tests;
 
 [TestFixture]
+[NonParallelizable]
 public class PrepareSimulationTests : BaseTest
 {
     private PrepareSimulationPage _prepareSimulationPage;
