@@ -33,51 +33,37 @@ public class IterationResultTests : BaseTest
         });
     }
 
-    // private void EnsureSimulationExists()
-    // {
-    //     if (String.IsNullOrEmpty(StaticSimulationId))
-    //     {
-    //         var prepPage = _mainPage.GoToPrepareSimulationViaSectionButton();
-    //         prepPage.StartAnySimulation(2);
-    //         StaticSimulationId = prepPage.GetSimulationId();
-    //         var simulationItemPage = prepPage.GoToSimulationItemPage();
-    //         simulationItemPage.AssertIfDisplayed(StaticSimulationId);
-    //         simulationItemPage.WaitForCompletedSimulation();
-    //         _iterationResultPage = simulationItemPage.GoToIteration(rand.Next(0,2));
-    //     }
-    //     else
-    //     {
-    //         var simulationItemPage = _mainPage.GoToSimulationItemPageViaUrl(StaticSimulationId);
-    //         simulationItemPage.AssertIfDisplayed(StaticSimulationId);
-    //         simulationItemPage.WaitForCompletedSimulation();
-    //         _iterationResultPage = simulationItemPage.GoToIteration(rand.Next(0,2));
-    //     }
-    //     SimulationId = StaticSimulationId;
-    // }
+    private void EnsureSimulationExists()
+    {
+        if (String.IsNullOrEmpty(StaticSimulationId))
+        {
+            var prepPage = _mainPage.GoToPrepareSimulationViaSectionButton();
+            prepPage.StartAnySimulation(1);
+            StaticSimulationId = prepPage.GetSimulationId();
+            _createdSimulationIds.Add(StaticSimulationId);
+            var simulationItemPage = prepPage.GoToSimulationItemPage();
+            simulationItemPage.AssertIfDisplayed(StaticSimulationId);
+            simulationItemPage.WaitForCompletedSimulation();
+            _iterationResultPage = simulationItemPage.GoToIteration(0);
+        }
+        else
+        {
+            var simulationItemPage = _mainPage.GoToSimulationItemPageViaUrl(StaticSimulationId);
+            simulationItemPage.AssertIfDisplayed(StaticSimulationId);
+            simulationItemPage.WaitForCompletedSimulation();
+            _iterationResultPage = simulationItemPage.GoToIteration(0);
+        }
+        SimulationId = StaticSimulationId;
+    }
 
-    // //[Test]
-    // public void IterationResult_Assert_Scoreboard_SimulatedMatches()
-    // {
-    //     if (String.IsNullOrEmpty(SimulationId))
-    //         throw new Exception("Init not completed? Init() - IterationResult_Assert_Scoreboard");
-        
-    //     _iterationResultPage.AssertIfDisplayed();
-    //     _iterationResultPage.AssertNumOfTeamsInTable(18 * 10 + 1);
-    //     _iterationResultPage.AssertNumOfSimulatedMatches();
-    // }
 
-    // //[Test]
-    // public void IterationResult_Assert_SimulatedMatchLabels()
-    // {
-    //     if (String.IsNullOrEmpty(SimulationId))
-    //         throw new Exception("Init not completed? Init() - IterationResult_Assert_SimulatedMatchLabels");
+
+    [Test]
+    public void IterationResult_Assert_RadarChart()
+    {
+        EnsureSimulationExists();
         
-    //     _iterationResultPage.AssertIfDisplayed();
-        
-    //     var simulatedMatchesCount = _iterationResultPage.GetNumberOfSimulatedMatches();
-    //     Utils.AssertHelper.IsTrue(simulatedMatchesCount > 0, "Simulated matches count should be greater than 0");
-        
-    //     // This will assert that the number of elements with selenium-id="simulated" matches the count
-    //     _iterationResultPage.AssertNumOfSimulatedMatches();
-    // }
+        _iterationResultPage.AssertIfDisplayed();
+        _iterationResultPage.AssertRadarChartDisplayed();
+    }
 }

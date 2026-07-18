@@ -56,8 +56,7 @@ public class PrepareSimulationTests : BaseTest
     }
 
 
-    //[Test]
-    //[Ignore("Execution takes more than 30 seconds or is not stable")]
+    [Test]
     public void PrepareSimulation_Should_Create_ALL_Simulation()
     {
         PrepareSimulationModel model = new()
@@ -82,6 +81,7 @@ public class PrepareSimulationTests : BaseTest
         _prepareSimulationPage.PrepareSimulationByModel(model, true);
 
         string simulationId = _prepareSimulationPage.GetSimulationId();
+        _createdSimulationIds.Add(simulationId);
 
 
         SimulationItemPage simulationItemPage = _prepareSimulationPage.GoToSimulationItemPage();

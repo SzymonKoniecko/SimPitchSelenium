@@ -44,4 +44,11 @@ public class LeagueOverviewsPage : BasePage
         var scoreboard = WaitForElement(By_Scoreboard_Complete_Details);
         AssertHelper.IsTrue(scoreboard.Displayed, "Scoreboard complete details should be displayed", "AssertScoreboardDisplayed");
     }
+
+    public TeamPage GoToFirstTeam()
+    {
+        var firstTeamCard = WaitForElement(By.CssSelector(".team-card__link"));
+        firstTeamCard.Click();
+        return new TeamPage(Driver);
+    }
 }

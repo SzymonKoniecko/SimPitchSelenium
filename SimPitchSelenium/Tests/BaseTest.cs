@@ -9,6 +9,7 @@ public abstract class BaseTest
 {
     protected IWebDriver Driver = default!;
     protected string BaseUrl = default!;
+    protected List<string> _createdSimulationIds = new();
 
     [ThreadStatic]
     private static IWebDriver? _driverInstance;
@@ -27,6 +28,26 @@ public abstract class BaseTest
     [TearDown]
     public void TearDown()
     {
+        // Cleanup simulations
+        foreach (var simId in _createdSimulationIds)
+        {
+            try
+            {
+                using var client = new System.Net.Http.HttpClient();
+                client.BaseAddress = new Uri(ConfigReader.GetApiBaseUrl());
+                var response = client.DeleteAsync($"/api/engine/Simulation/stop/{simId}").Result;
+                if (!response.IsSuccessStatusCode)
+                {
+                    TestContext.WriteLine($"Failed to stop simulation {simId}. Status code: {response.StatusCode}");
+                }
+            }
+            catch (Exception ex)
+            {
+                TestContext.WriteLine($"Exception while stopping simulation {simId}: {ex.Message}");
+            }
+        }
+        _createdSimulationIds.Clear();
+
         try
         {
             var status = TestContext.CurrentContext.Result.Outcome.Status;
