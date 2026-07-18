@@ -21,6 +21,13 @@ public static class ConfigReader
 
     public static string Get(string key)
     {
+        var envKey = key.Replace(".", "_").ToUpperInvariant();
+        var envValue = Environment.GetEnvironmentVariable(envKey);
+        if (!string.IsNullOrEmpty(envValue))
+        {
+            return envValue;
+        }
+
         var json = File.ReadAllText(configPath);
         var jObject = JObject.Parse(json);
         var token = jObject.SelectToken(key);
