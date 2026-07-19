@@ -57,14 +57,14 @@ public class SimulationItemPage : BasePage
         return GetElementText(By_Simulation_State_Value).Trim();
     }
 
-    internal void WaitForCompletedSimulation()
+    internal void WaitForCompletedSimulation(int timeoutSeconds = 60)
     {
         string state = GetSimulationState();
         while (state.Contains("Running") || state.Contains("Pending"))
         {
             Thread.Sleep(1000);
             RefreshPage();
-            WaitForElement(By_Simulation_State_Value, 60);
+            WaitForElement(By_Simulation_State_Value, timeoutSeconds);
             state = GetSimulationState();
         }
     }

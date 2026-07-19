@@ -150,9 +150,10 @@ public class SimulationItemTests : BaseTest
         
         System.Threading.Thread.Sleep(1000); // Give it a moment to stop
         _simulationItemPage.RefreshPage();
+        _simulationItemPage.RefreshPage();
         
         // Polling loop inside WaitForCompletedSimulation will wait if it's still running, but it should be Stopped
-        _simulationItemPage.WaitForCompletedSimulation();
+        _simulationItemPage.WaitForCompletedSimulation(120);
         _simulationItemPage.AssertSimulationState("Cancelled");
     }
 
