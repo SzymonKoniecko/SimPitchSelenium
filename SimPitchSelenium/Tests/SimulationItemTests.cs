@@ -58,7 +58,7 @@ public class SimulationItemTests : BaseTest
         // Preparation (large iteration number to cover changes in statuses)
         _mainPage = new MainPage(Driver).Open();
         var prepPage = _mainPage.GoToPrepareSimulationViaSectionButton();
-        prepPage.StartAnySimulation(20);
+        prepPage.StartAnySimulation(200);
         SimulationId = prepPage.GetSimulationId();
         _createdSimulationIds.Add(SimulationId);
         _simulationItemPage = prepPage.GoToSimulationItemPageViaUrl(SimulationId);
@@ -151,12 +151,26 @@ public class SimulationItemTests : BaseTest
         }
         
         System.Threading.Thread.Sleep(1000); // Give it a moment to stop
-        _simulationItemPage.RefreshPage();
-        _simulationItemPage.RefreshPage();
-
-        // Polling loop inside WaitForCompletedSimulation will wait if it's still running, but it should be Stopped
-        _simulationItemPage.WaitForCompletedSimulation(120);
-        _simulationItemPage.AssertSimulationState("Cancelled");
+        
+        // Assert state via API instead of UI
+        using (var client = new System.Net.Http.HttpClient())
+        {
+            client.BaseAddress = new Uri(ConfigReader.GetApiBaseUrl());
+            var getResponse = client.GetAsync($"/api/engine/Simulation/{SimulationId}").Result;
+            Assert.That(getResponse.IsSuccessStatusCode, Is.True, "API call to get simulation failed.");
+            var json = getResponse.Content.ReadAsStringAsync().Result;
+            var jObject = Newtonsoft.Json.Linq.JObject.Parse(json);
+            var state = jObject["state"]?.ToString();
+            
+            if (state != null)
+            {
+                TextHelper.AssertTextContains(state, "Cancelled", "Simulation state in API is not Cancelled.");
+            }
+            else
+            {
+                throw new Exception("Missing Simulation state");
+            }
+        }
     }
 
     [Test]
