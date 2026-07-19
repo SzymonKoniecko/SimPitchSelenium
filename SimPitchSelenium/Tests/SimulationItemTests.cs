@@ -57,7 +57,7 @@ public class SimulationItemTests : BaseTest
         // Preparation (large iteration number to cover changes in statuses)
         _mainPage = new MainPage(Driver).Open();
         var prepPage = _mainPage.GoToPrepareSimulationViaSectionButton();
-        prepPage.StartAnySimulation(200);
+        prepPage.StartAnySimulation(20);
         SimulationId = prepPage.GetSimulationId();
         _createdSimulationIds.Add(SimulationId);
         _simulationItemPage = prepPage.GoToSimulationItemPageViaUrl(SimulationId);
