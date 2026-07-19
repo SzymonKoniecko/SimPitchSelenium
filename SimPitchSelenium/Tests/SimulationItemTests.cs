@@ -54,6 +54,7 @@ public class SimulationItemTests : BaseTest
     [Test]
     public void SimulationItem_Assert_Status_And_Refresh()
     {
+        System.Threading.Thread.Sleep(4000); // Give it a moment to start
         // Preparation (large iteration number to cover changes in statuses)
         _mainPage = new MainPage(Driver).Open();
         var prepPage = _mainPage.GoToPrepareSimulationViaSectionButton();
@@ -130,6 +131,7 @@ public class SimulationItemTests : BaseTest
     [Test]
     public void SimulationItem_Assert_Stop_Simulation()
     {
+        System.Threading.Thread.Sleep(4000); // Give it a moment to start
         _mainPage = new MainPage(Driver).Open();
         var prepPage = _mainPage.GoToPrepareSimulationViaSectionButton();
         prepPage.StartAnySimulation(400);
@@ -151,7 +153,7 @@ public class SimulationItemTests : BaseTest
         System.Threading.Thread.Sleep(1000); // Give it a moment to stop
         _simulationItemPage.RefreshPage();
         _simulationItemPage.RefreshPage();
-        
+
         // Polling loop inside WaitForCompletedSimulation will wait if it's still running, but it should be Stopped
         _simulationItemPage.WaitForCompletedSimulation(120);
         _simulationItemPage.AssertSimulationState("Cancelled");
